@@ -1,0 +1,8 @@
+	p.print(p.thread_num, k, food_fitness[0], salp_fitness[k])
+	p.print("Z -", p.thread_num, food_fitness[0], fitness)
+
+p.print(p.thread_num, k, "\t", inflation_rates[k], "\t", best_universe_inflation_rate[0])
+print("Z -", inflation_rates[k], best_universe_inflation_rate[0])
+
+p.print(p.thread_num, k, "\t", fitness, "\t", alpha_score[0])
+print("Z -", fitness, alpha_score[0])
