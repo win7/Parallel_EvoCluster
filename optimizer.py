@@ -151,7 +151,7 @@ def run(optimizer, objective_function, dataset_list, num_runs, params, export_fl
 		# the directory where the dataset is stored
 		datasets_directory = "datasets/unsupervised/"
 
-	results_directory = time.strftime("%Y-%m-%d_%H:%M:%S") + "/"
+	results_directory = "results/{}/".format(time.strftime("%Y-%m-%d_%H:%M:%S"))
 	Path(results_directory).mkdir(parents=True, exist_ok=True)
 
 	dataset_len = len(dataset_list)
