@@ -35,7 +35,7 @@ if __name__ == "__main__":
 	num_runs = 1
 
 	# Select general parameters for all optimizers (population size, number of iterations, number of cores for MP)
-	params = {"population_size": cores * 10, "iterations": 50, "cores": 3}
+	params = {"population_size": cores * 10, "iterations": 2, "cores": 3}
 
 	# Choose whether to Export the results in different formats
 	export_flags = {

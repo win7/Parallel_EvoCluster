@@ -1,3 +1,5 @@
+### Parallel EvoCluster was implemented according to EvoCluster
+
 ### EvoCluster: An Open-Source Nature-Inspired Optimization Clustering Framework in Python
 
 ### Beta Version ###
