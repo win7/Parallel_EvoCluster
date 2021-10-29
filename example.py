@@ -7,9 +7,9 @@ if __name__ == "__main__":
 
 	# Select optimizers
 	# "SSO", "SSA", "PSO", "GA", "BAT", "FFA", "GWO", "WOA", "MVO", "MFO", "CS"
-	"""optimizer = ["SSA", "PSO", "GA", "BAT", "FFA", "GWO", "WOA", "MVO", "MFO", "CS", 
+	optimizer = ["SSA", "PSO", "GA", "BAT", "FFA", "GWO", "WOA", "MVO", "MFO", "CS", 
 				"P_MPI_SSA", "P_MPI_PSO", "P_MPI_GA", "P_MPI_BAT", "P_MPI_FFA", "P_MPI_GWO", "P_MPI_WOA", "P_MPI_MVO", "P_MPI_MFO", "P_MPI_CS",
-				"P_MP_SSA", "P_MP_PSO", "P_MP_GA", "P_MP_BAT", "P_MP_FFA", "P_MP_GWO", "P_MP_WOA", "P_MP_MVO", "P_MP_MFO", "P_MP_CS"] """
+				"P_MP_SSA", "P_MP_PSO", "P_MP_GA", "P_MP_BAT", "P_MP_FFA", "P_MP_GWO", "P_MP_WOA", "P_MP_MVO", "P_MP_MFO", "P_MP_CS"]
 	# optimizer = ["P_MPI_SSA", "P_MPI_PSO", "P_MPI_GA", "P_MPI_BAT", "P_MPI_FFA", "P_MPI_GWO", "P_MPI_WOA", "P_MPI_MVO", "P_MPI_MFO", "P_MPI_CS"]
 	# optimizer = ["SSA", "GWO", "P_MPI_GWO"]
 	# optimizer = ["GA"]
@@ -17,7 +17,7 @@ if __name__ == "__main__":
 	# optimizer = ["WOA", "P_MP_WOA"]
 	# optimizer = ["P_MPI_SSA", "P_MPI_PSO", "P_MPI_GA", "P_MPI_BAT", "P_MPI_FFA", "P_MPI_GWO", "P_MPI_WOA", "P_MPI_MVO", "P_MPI_MFO", "P_MPI_CS", 
 	#		"P_MP_SSA", "P_MP_PSO", "P_MP_GA", "P_MP_BAT", "P_MP_FFA", "P_MP_GWO", "P_MP_WOA", "P_MP_MVO", "P_MP_MFO", "P_MP_CS"]
-	optimizer = ["WOA", "P_MP_WOA", "P_MPI_WOA"]
+	# optimizer = ["WOA", "P_MP_WOA", "P_MPI_WOA"]
 
 	# Select objective function
 	# "SSE", "TWCV", "SC", "DB", "DI"
