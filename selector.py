@@ -180,6 +180,6 @@ if __name__ == "__main__":
 	# print(population[:5])
 	
 	selector(p.algorithm, p.objective_name, p.num_clusters, p.num_features, p.population_size,
-		 p.iterations, p.points, p.metric, p.dataset_name, p.policy, population, p.cores)
+				p.iterations, p.points, p.metric, p.dataset_name, p.policy, population, p.cores)
 
-# selector(p["algorithm"], p["objective_name"], p["num_clusters"], p["num_features"], p["population_size"], p["iterations"], p["points"], p["metric"], p["dataset_name"], p["policy"])
+	# selector(p["algorithm"], p["objective_name"], p["num_clusters"], p["num_features"], p["population_size"], p["iterations"], p["points"], p["metric"], p["dataset_name"], p["policy"])
