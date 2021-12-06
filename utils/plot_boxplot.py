@@ -19,7 +19,7 @@ def run(results_directory, optimizer, objective_function, dataset_list, ev_measu
                     objective_name = objective_function[j]
                     optimizer_name = optimizer[i]
                     
-                    detailedData = fileResultsDetailsData[(fileResultsDetailsData["Dataset"] == dataset_list[d]) & (fileResultsDetailsData["Optimizer"] == optimizer_name) & (fileResultsDetailsData["objf_name"] == objective_name)]
+                    detailedData = fileResultsDetailsData[(fileResultsDetailsData["Dataset"] == dataset_list[d]) & (fileResultsDetailsData["Optimizer"] == optimizer_name) & (fileResultsDetailsData["ObjfName"] == objective_name)]
                     detailedData = detailedData[ev_measures[z]]
                     detailedData = np.array(detailedData).T.tolist()
                     data.append(detailedData)

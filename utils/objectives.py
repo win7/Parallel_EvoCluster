@@ -55,14 +55,17 @@ def TWCV(startpts, points, num_clusters):
 	if np.unique(labels_pred).size < num_clusters:
 		fitness = sys.float_info.max
 	else:
-		sum_all_features = np.sum(np.sum(np.power(points, 2)))
+		# sum_all_features = sum(sum(np.power(points, 2)))	# Before
+		sum_all_features = np.sum(np.power(points, 2))		# After (best)
 		sum_all_pair_points_cluster = 0
 		for cluster_id in range(num_clusters):
 			indexes = np.where(np.array(labels_pred) == cluster_id)[0]
 			points_in_cluster = points[np.array(indexes)]
-			sum_pair_points_cluster = np.sum(points_in_cluster)
+			# sum_pair_points_cluster = sum(points_in_cluster)				# Before
+			sum_pair_points_cluster = np.sum(points_in_cluster, axis=0)		# After (best)
 			sum_pair_points_cluster = np.power(sum_pair_points_cluster, 2)
-			sum_pair_points_cluster = np.sum(sum_pair_points_cluster)
+			# sum_pair_points_cluster = sum(sum_pair_points_cluster)			# Before
+			sum_pair_points_cluster = np.sum(sum_pair_points_cluster, axis=0)	# After (best)
 			sum_pair_points_cluster = sum_pair_points_cluster / len(points_in_cluster)
 
 			sum_all_pair_points_cluster += sum_pair_points_cluster
@@ -76,7 +79,7 @@ def SC(startpts, points, num_clusters, metric):
 		fitness = sys.float_info.max
 	else:
 		silhouette = metrics.silhouette_score(points, labels_pred, metric=metric)
-		#silhouette = (silhouette - (-1)) / (1 - (-1))
+		# silhouette = (silhouette - (-1)) / (1 - (-1))
 		silhouette = (silhouette + 1) / 2
 		fitness = 1 - silhouette
 	return fitness, labels_pred

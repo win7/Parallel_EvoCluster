@@ -162,7 +162,7 @@ def run(optimizer, objective_function, dataset_list, num_runs, params, export_fl
 	labels_true = [0] * dataset_len
 
 	for l in range(0, iterations):
-		CnvgHeader.append("iterations" + str(l + 1))
+		CnvgHeader.append("Iterations" + str(l + 1))
 
 	# read all datasets
 	for h in range(dataset_len):
@@ -247,7 +247,7 @@ def run(optimizer, objective_function, dataset_list, num_runs, params, export_fl
 					# sol = selector(optimizer[i], objective_name, k[h], f[h], population_size, iterations, points[h], metric, dataset_list[h], policy, population)
 
 					# ---------------------
-					debug = False
+					debug = False	# True for testing
 					if debug:
 						from selector import selector
 						cores
@@ -281,9 +281,8 @@ def run(optimizer, objective_function, dataset_list, num_runs, params, export_fl
 						else:
 							print("Sequential version")
 							os.system("python selector.py")
-
-						sol = Solution().get("{}_{}_{}".format(optimizer[i], objective_name, dataset_list[h]))
 					# ---------------------
+					sol = Solution().get("{}_{}_{}".format(optimizer[i], objective_name, dataset_list[h]))
 
 					if labels_exist:
 						HS[z] = measures.HS(labels_true[h], sol.labels_pred)
@@ -317,7 +316,7 @@ def run(optimizer, objective_function, dataset_list, num_runs, params, export_fl
 							# just one time to write the header of the CSV file
 							if (flag_details_Labels == False):
 								header_details = np.concatenate(
-									[["Dataset", "Optimizer", "Topology", "objf_name", "k"]])
+									[["Dataset", "Optimizer", "Topology", "ObjfName", "k"]])
 								writer_details.writerow(header_details)
 								flag_details_Labels = True
 							a = np.concatenate(
@@ -332,11 +331,11 @@ def run(optimizer, objective_function, dataset_list, num_runs, params, export_fl
 							# just one time to write the header of the CSV file
 							if (flag_details == False):
 								if labels_exist:
-									header_details = np.concatenate([["Dataset", "Optimizer", "Topology", "objf_name", "k", "ExecutionTime", "SSE", "Purity",
+									header_details = np.concatenate([["Dataset", "Optimizer", "Topology", "ObjfName", "k", "ExecutionTime", "SSE", "Purity",
 																		 "Entropy", "HS", "CS", "VM", "AMI", "ARI", "Fmeasure", "TWCV", "SC", "Accuracy", "DI", "DB", "STDev"], CnvgHeader])
 								else:
 									header_details = np.concatenate(
-										[["Dataset", "Optimizer", "Topology", "objf_name", "k", "ExecutionTime", "SSE", "TWCV", "SC", "DI", "DB", "STDev"], CnvgHeader])
+										[["Dataset", "Optimizer", "Topology", "ObjfName", "k", "ExecutionTime", "SSE", "TWCV", "SC", "DI", "DB", "STDev"], CnvgHeader])
 								writer_details.writerow(header_details)
 								flag_details = True
 							if labels_exist:
@@ -356,11 +355,11 @@ def run(optimizer, objective_function, dataset_list, num_runs, params, export_fl
 						writer = csv.writer(out, delimiter=",")
 						if (flag == False):  # just one time to write the header of the CSV file
 							if labels_exist:
-								header = np.concatenate([["Dataset", "Optimizer", "Topology", "objf_name", "k", "ExecutionTime", "SSE", "Purity", "Entropy",
+								header = np.concatenate([["Dataset", "Optimizer", "Topology", "ObjfName", "k", "ExecutionTime", "SSE", "Purity", "Entropy",
 															 "HS", "CS", "VM", "AMI", "ARI", "Fmeasure", "TWCV", "SC", "Accuracy", "DI", "DB", "STDev"], CnvgHeader])
 							else:
 								header = np.concatenate(
-									[["Dataset", "Optimizer", "Topology", "objf_name", "k", "ExecutionTime", "SSE", "TWCV", "SC", "DI", "DB", "STDev"], CnvgHeader])
+									[["Dataset", "Optimizer", "Topology", "ObjfName", "k", "ExecutionTime", "SSE", "TWCV", "SC", "DI", "DB", "STDev"], CnvgHeader])
 							writer.writerow(header)
 							flag = True  # at least one experiment
 

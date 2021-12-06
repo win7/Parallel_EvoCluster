@@ -12,9 +12,11 @@ if __name__ == "__main__":
 	optimizer = ["SSA", "PSO", "GA", "BAT", "FFA", "GWO", "WOA", "MVO", "MFO", "CS", 
 				"P_MPI_SSA", "P_MPI_PSO", "P_MPI_GA", "P_MPI_BAT", "P_MPI_FFA", "P_MPI_GWO", "P_MPI_WOA", "P_MPI_MVO", "P_MPI_MFO", "P_MPI_CS",
 				"P_MP_SSA", "P_MP_PSO", "P_MP_GA", "P_MP_BAT", "P_MP_FFA", "P_MP_GWO", "P_MP_WOA", "P_MP_MVO", "P_MP_MFO", "P_MP_CS"]
+	optimizer = ["SSA"] # , "PSO", "GA", "BAT", "FFA", "GWO", "WOA", "MVO", "MFO", "CS"]
 
 	# Select objective function
 	# "SSE", "TWCV", "SC", "DB", "DI"
+	objective_function = ["SSE", "TWCV", "SC", "DB", "DI"]
 	objective_function = ["SSE", "TWCV", "SC", "DB", "DI"]
 
 	# Select data sets
@@ -22,13 +24,14 @@ if __name__ == "__main__":
 	# "iris2D", "jain", "liver", "moons", "mouse", "pathbased", "seeds", "smiley", "sonar", "varied", "vary-density", "vertebral2", "vertebral3", "wdbc", "wine"
 	dataset_list = ["aggregation", "aniso", "appendicitis", "balance", "banknote", "blobs", "Blood", "circles", "diagnosis_II", "ecoli", "flame", "glass", "heart", "ionosphere",
 					"iris", "iris2D", "jain", "liver", "moons", "mouse", "pathbased", "seeds", "smiley", "sonar", "varied", "vary-density", "vertebral2", "vertebral3", "wdbc", "wine"]
+	dataset_list = ["iris"]
 
 	# Select number of repetitions for each experiment.
 	# To obtain meaningful statistical results, usually 30 independent runs are executed for each algorithm.
 	num_runs = 1
 
 	# Select general parameters for all optimizers (population size, number of iterations, number of cores for MP)
-	params = {"population_size": cores * 10, "iterations": 2, "cores": 3}
+	params = {"population_size": cores * 10, "iterations": 20, "cores": 3}
 
 	# Choose whether to Export the results in different formats
 	export_flags = {

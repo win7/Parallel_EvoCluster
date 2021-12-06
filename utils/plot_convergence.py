@@ -32,7 +32,7 @@ def run(results_directory, optimizer, objective_function, dataset_list, iteratio
 				file_results_data = file_results_data.drop(["SSE", "Purity", "Entropy", "HS", "CS", "VM", "AMI", "ARI", 
 					"Fmeasure", "TWCV", "SC", "Accuracy", "DI", "DB", "STDev"], errors="ignore", axis=1)
 				row = file_results_data[(file_results_data["Dataset"] == dataset_list[i]) & 
-					(file_results_data["Optimizer"] == optimizer_name) & (file_results_data["objf_name"] == objective_name)]
+					(file_results_data["Optimizer"] == optimizer_name) & (file_results_data["ObjfName"] == objective_name)]
 				row = row.iloc[:, 6 + start_iteration:]
 				plt.plot(all_generations, row.values.tolist()[0], label=optimizer_name, linestyle=line_style, linewidth=1.5, marker="")
 

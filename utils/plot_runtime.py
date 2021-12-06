@@ -12,7 +12,7 @@ def run(results_directory, optimizer, objective_function, dataset_list, iteratio
 
 			fig_name = results_directory + "/runtime-" + dataset_list[i] + "-" + objective_name + ".png"
 
-			detailed_data = file_results_data[(file_results_data["Dataset"] == dataset_list[i]) &  (file_results_data["objf_name"] == objective_name)]
+			detailed_data = file_results_data[(file_results_data["Dataset"] == dataset_list[i]) &  (file_results_data["ObjfName"] == objective_name)]
 
 			bars = pd.DataFrame(detailed_data, columns=["Optimizer", "ExecutionTime"])
 			bars = bars.sort_values(by=["ExecutionTime"], ascending=False)
