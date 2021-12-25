@@ -1,20 +1,18 @@
-from utils.params import Params
-import numpy as np
-import utils.objectives as objectives
+from source.params import Params
 
-import serial_optimizers.CSSA as cssa
-import serial_optimizers.CPSO as cpso
-import serial_optimizers.CGA as cga
-import serial_optimizers.CBAT as cbat
-import serial_optimizers.CFFA as cffa
-import serial_optimizers.CGWO as cgwo
-import serial_optimizers.CWOA as cwoa
-import serial_optimizers.CMVO as cmvo
-import serial_optimizers.CMFO as cmfo
-import serial_optimizers.CCS as ccs
-# import serial_optimizers.CSSO as csso
+from source.optimizers.serial import CSSA as cssa
+from source.optimizers.serial import CPSO as cpso
+from source.optimizers.serial import CGA as cga
+from source.optimizers.serial import CBAT as cbat
+from source.optimizers.serial import CFFA as cffa
+from source.optimizers.serial import CGWO as cgwo
+from source.optimizers.serial import CWOA as cwoa
+from source.optimizers.serial import CMVO as cmvo
+from source.optimizers.serial import CMFO as cmfo
+from source.optimizers.serial import CCS as ccs
+# from source.optimizers.serial import CSSO as csso
 
-import parallel_mpi_optimizers.PCSSA as p_mpi_cssa
+""" import parallel_mpi_optimizers.PCSSA as p_mpi_cssa
 import parallel_mpi_optimizers.PCPSO as p_mpi_cpso
 import parallel_mpi_optimizers.PCGA as p_mpi_cga
 import parallel_mpi_optimizers.PCBAT as p_mpi_cbat
@@ -36,9 +34,14 @@ import parallel_mp_optimizers.PCWOA as p_mp_cwoa
 import parallel_mp_optimizers.PCMVO as p_mp_cmvo
 import parallel_mp_optimizers.PCMFO as p_mp_cmfo
 import parallel_mp_optimizers.PCCS as p_mp_ccs
-# import parallel_pi_optimizers.PCSSO as p_mp_csso
+# import parallel_pi_optimizers.PCSSO as p_mp_csso """
+
+import numpy as np
+import source.objectives as objectives
 
 def selector(algorithm, objective_name, num_clusters, num_features, population_size, iterations, points, metric, dataset_name, policy, population, cores):
+	# print(type(algorithm), type(objective_name), type(num_clusters), type(num_features), type(population_size), type(iterations), type(points), type(metric), type(dataset_name), type(policy), type(population), type(cores))
+	# print(algorithm, objective_name, num_clusters, num_features, population_size, iterations, points, metric, dataset_name, policy, population, cores)
 	"""
 	This is used to call the algorithm which is selected
 
@@ -99,9 +102,9 @@ def selector(algorithm, objective_name, num_clusters, num_features, population_s
 		sol = ccs.CS(getattr(objectives, objective_name), lb, ub, dimension, population_size,
 					 iterations, num_clusters, points, metric, dataset_name, population)
 	# elif (algorithm == "SSO"):
-	# 	sol = csso.CSSO(getattr(objectives, objective_name), lb, ub, dimension, population_size, iterations, num_clusters, points, metric, dataset_name, population)
+	# 	sol = csso.CSSO(getattr(objectives, objective_name), lb, ub, dimension, population_size, iterations, num_clusters, points, metric, dataset_name, population) """
 
-	elif (algorithm == "P_MP_SSA"):
+	""" elif (algorithm == "P_MP_SSA"):
 		sol = p_mp_cssa.PSSA(getattr(objectives, objective_name), lb, ub, dimension,
 							 population_size, iterations, num_clusters, points, metric, dataset_name, population, cores)
 	elif (algorithm == "P_MP_PSO"):
@@ -165,13 +168,14 @@ def selector(algorithm, objective_name, num_clusters, num_features, population_s
 		sol = p_mpi_ccs.PCS(getattr(objectives, objective_name), lb, ub, dimension, population_size,
 							iterations, num_clusters, points, metric, dataset_name, policy, population)
 	# elif (algorithm == "P_MPI_SSO"):
-	#	sol = p_mpi_csso.PCSSO(getattr(objectives, objective_name), lb, ub, dimension, population_size, iterations, num_clusters, points, metric, dataset_name, policy, population)
+	#	sol = p_mpi_csso.PCSSO(getattr(objectives, objective_name), lb, ub, dimension, population_size, iterations, num_clusters, points, metric, dataset_name, policy, population) """
 
 if __name__ == "__main__":
 	seeds = [169735477, 160028434, 160897947, 157407246, 153881302,
 				172694171, 171070236, 154302761, 165786948, 159504387]
 	p = Params().get()
-	np.random.seed(seeds[p.iteration])
+	# np.random.seed(seeds[p.iteration])
+	np.random.seed(123123123)
 	# Generate population
 	lb = 0
 	ub = 1

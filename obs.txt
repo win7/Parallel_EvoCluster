@@ -1,0 +1,16 @@
+
+
+
+SearchAgents_no, n: population_sice
+d: dimension
+
+CBAT:   numpy.random.rand(n,d)*(ub-lb)+lb
+CCS:    numpy.random.rand(n,dim)*(ub-lb)+lb
+CFFA:   numpy.random.uniform(0,1,(n,dim)) *(ub-lb)+lb
+CGA:    numpy.random.uniform(0,1,(popSize,dim)) *(ub-lb)+lb
+CGWOA:  numpy.random.uniform(0,1,(SearchAgents_no,dim)) *(ub-lb)+lb
+CMFO:   numpy.random.uniform(0,1,(N,dim)) *(ub-lb)+lb
+CMVO:   numpy.random.uniform(0,1,(N,dim)) *(ub-lb)+lb
+CPSO:   numpy.random.uniform(0,1,(PopSize,dim)) *(ub-lb)+lb
+CSSA:   numpy.random.uniform(0,1,(N,dim)) *(ub-lb)+lb
+CWOA:   numpy.random.uniform(0,1,(SearchAgents_no,dim)) *(ub-lb)+lb
