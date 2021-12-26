@@ -6,14 +6,13 @@ Created on Fri Mar 15 21:04:15 2019
 """
 # ------- Parallel -------
 from mpi4py import MPI
-from source.models import run_migration
+from utils.models import run_migration
 # ------------------------
 
-from source.solution import Solution
+from utils.solution import Solution
 
 import numpy as np
 import time
-import random
 
 def PPSO(objective_function, lb, ub, dimension, population_size, iterations, num_clusters, points, metric, dataset_name, policy, population):
 	# ------- Parallel -------
@@ -25,14 +24,14 @@ def PPSO(objective_function, lb, ub, dimension, population_size, iterations, num
 
 	num_features = int(dimension / num_clusters)
 	# PSO parameters
-	# dimension = 30
-	# iterations = 200
-	# v_max = 6
-	# population_size = 50     #population size
-	# lb = -10
-	# ub = 10
+	# dimension=30
+	# iterations=200
+	# Vmax=6
+	# population_size=50     #population size
+	# lb=-10
+	# ub=10
 
-	v_max = 6  # raneem
+	Vmax = 6  # raneem
 	w_max = 0.9
 	w_min = 0.2
 	c1 = 2
@@ -53,13 +52,11 @@ def PPSO(objective_function, lb, ub, dimension, population_size, iterations, num
 	g_best_score = float("inf")
 	g_best_labels_pred = np.full(len(points), np.inf)
 
-	# ------- Parallel -------
 	pos = population[rank * population_size:population_size * (rank + 1)] # np.random.uniform(0, 1, (population_size, dimension)) * (ub - lb) + lb
-	# ------------------------
-	
+
 	convergence_curve = np.zeros(iterations)
 
-	print("MPI_PSO is optimizing \"" + objective_function.__name__ + "\"")
+	print("P_MPI_PSO is optimizing \"" + objective_function.__name__ + "\"")
 
 	timer_start = time.time()
 	sol.start_time = time.strftime("%Y-%m-%d-%H-%M-%S")
@@ -91,15 +88,15 @@ def PPSO(objective_function, lb, ub, dimension, population_size, iterations, num
 
 		for i in range(population_size):
 			for j in range(dimension):
-				r1 = random.random()
-				r2 = random.random()
+				r1 = np.random.random()
+				r2 = np.random.random()
 				vel[i, j] = w * vel[i, j] + c1 * r1 * (p_best[i, j] - pos[i, j]) + c2 * r2 * (g_best[j] - pos[i, j])
 
-				if(vel[i, j] > v_max):
-					vel[i, j] = v_max
+				if(vel[i, j] > Vmax):
+					vel[i, j] = Vmax
 
-				if(vel[i, j] < -v_max):
-					vel[i, j] = -v_max
+				if(vel[i, j] < -Vmax):
+					vel[i, j] = -Vmax
 
 				pos[i, j] = pos[i, j] + vel[i, j]
 
@@ -117,7 +114,7 @@ def PPSO(objective_function, lb, ub, dimension, population_size, iterations, num
 	sol.end_time = time.strftime("%Y-%m-%d-%H-%M-%S")
 	sol.runtime = timer_end - timer_start
 	sol.convergence = convergence_curve
-	sol.optimizer = "MPI_PSO"
+	sol.optimizer = "P_MPI_PSO"
 	sol.objf_name = objective_function.__name__
 	sol.dataset_name = dataset_name
 	sol.labels_pred = np.array(g_best_labels_pred, dtype=np.int64)

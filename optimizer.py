@@ -6,22 +6,9 @@ Created on Sat Mar  9 18:50:48 2019
 """
 from source.params import Params
 from source.solution import Solution
-from selector import selector
 
 from sklearn import preprocessing
 from pathlib import Path
-
-""" import serial_optimizers.CSSA as cssa
-import serial_optimizers.CPSO as cpso
-import serial_optimizers.CGA as cga
-import serial_optimizers.CBAT as cbat
-import serial_optimizers.CFFA as cffa
-import serial_optimizers.CGWO as cgwo
-import serial_optimizers.CWOA as cwoa
-import serial_optimizers.CMVO as cmvo
-import serial_optimizers.CMFO as cmfo
-import serial_optimizers.CCS as ccs
-import serial_optimizers.CSSO as csso """
 
 import csv
 import numpy as np
@@ -148,10 +135,10 @@ def run(optimizer, objective_function, dataset_list, num_runs, params, export_fl
 	CnvgHeader = []
 
 	if labels_exist:
-		datasets_directory = "../datasets/"  # the directory where the dataset is stored
+		datasets_directory = "datasets/"  # the directory where the dataset is stored
 	else:
 		# the directory where the dataset is stored
-		datasets_directory = "../datasets/unsupervised/"
+		datasets_directory = "datasets/unsupervised/"
 
 	results_directory = "results/{}/".format(time.strftime("%Y-%m-%d_%H:%M:%S"))
 	Path(results_directory).mkdir(parents=True, exist_ok=True)
@@ -235,12 +222,12 @@ def run(optimizer, objective_function, dataset_list, num_runs, params, export_fl
 				entropy = [0]*num_runs
 				convergence = [0]*num_runs
 				runtime = [0]*num_runs
-				#Agg = [0]*num_runs
+				# Agg = [0]*num_runs
 
 				for z in range(num_runs):
 					print("Dataset: " + dataset_list[h])
 					print("Num. Clusters: " + str(k[h]))
-					print("Run num.: " + str(z))
+					print("Run num.: " + str(z + 1))
 					print("Population Size: " + str(population_size))
 					print("Iterations: " + str(iterations))
 
@@ -249,8 +236,10 @@ def run(optimizer, objective_function, dataset_list, num_runs, params, export_fl
 					# sol = selector(optimizer[i], objective_name, k[h], f[h], population_size, iterations, points[h], metric, dataset_list[h], policy, population)
 
 					# ---------------------
-					debug = True	# True for testing
+					debug = False	# True for testing (serial)
 					if debug:
+						from selector import selector # Important only here
+
 						np.random.seed(123123123)
 						cores
 						lb = 0
@@ -274,9 +263,23 @@ def run(optimizer, objective_function, dataset_list, num_runs, params, export_fl
 						params.cores = cores
 						params.save()
 
-						if "P_MPI_" == optimizer[i][:6]:
+						# print(optimizer[i])
+						if "MPI" == optimizer[i][:3]:
 							print("Parallel MPI version")
-							os.system("mpiexec -n 24 --oversubscribe python selector.py")
+							# print(os.system("pwd"))
+							# result = os.system("mpirun -np 2 python -m mpi4py pyfile hello_mpi.py")
+							# result = os.system("mpirun -np 2 python -m mpi4py pyfile hello_mpi.py")
+							# result = subprocess.Popen("mpiexec -n 24 --oversubscribe python selector.py")
+							# print(result)
+							# result = subprocess.run(["mpirun -np 24", "python", "selector.py"])
+							# prog = subprocess.Popen('mpirun -n 2 python hello_mpi.py', stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+							# prog = subprocess.Popen('mpirun -np 24 --oversubscribe python selector.py', stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+							os.system("mpirun -np 24 --oversubscribe python selector.py")
+							# result = os.system("mpiexec -n 24 python selector.py")
+
+							""" prog.communicate()  # Returns (stdoutdata, stderrdata): stdout and stderr are ignored, here
+							if prog.returncode:
+								raise Exception('program returned error code {0}'.format(prog.returncode)) """
 						elif "P_MP_" == optimizer[i][:5]:
 							print("Parallel MP version")
 							os.system("python selector.py")

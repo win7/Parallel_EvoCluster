@@ -4,11 +4,6 @@ Created on Mon May 16 10:42:18 2016
 
 @author: hossam
 """
-# ------- Parallel -------
-from mpi4py import MPI
-from source.models import run_migration
-# ------------------------
-
 from source.solution import Solution
 
 import numpy as np
@@ -16,14 +11,7 @@ import math
 import time
 import random
 
-def PMFO(objective_function, lb, ub, dimension, population_size, iterations, num_clusters, points, metric, dataset_name, policy, population):
-	# ------- Parallel -------
-	comm = MPI.COMM_WORLD
-	rank = comm.Get_rank()
-	size = comm.Get_size()
-	population_size = int(population_size / 24)
-	# ------------------------
-
+def MFO(objective_function, lb, ub, dimension, population_size, iterations, num_clusters, points, metric, dataset_name, population):
 	num_features = int(dimension / num_clusters)
 	# iterations = 1000
 	# lb = -100
@@ -32,9 +20,7 @@ def PMFO(objective_function, lb, ub, dimension, population_size, iterations, num
 	# population_size = 50  # Number of search agents
 
 	# Initialize the positions of moths
-	# ------- Parallel -------
-	moth_pos = population[rank * population_size:population_size * (rank + 1)] # np.random.uniform(0, 1, (population_size, dimension)) * (ub - lb) + lb
-	# ------------------------
+	moth_pos = np.copy(population) # np.random.uniform(0, 1, (population_size, dimension)) * (ub - lb) + lb
 	moth_fitness = np.full(population_size, float("inf"))
 	moth_labels = np.zeros((population_size, len(points)))
 	# moth_fitness=np.fell(float("inf"))
@@ -63,7 +49,7 @@ def PMFO(objective_function, lb, ub, dimension, population_size, iterations, num
 
 	sol = Solution()
 
-	print("MPI_MFO is optimizing \"" + objective_function.__name__ + "\"")
+	print("MFO is optimizing \"" + objective_function.__name__ + "\"")
 
 	timer_start = time.time()
 	sol.start_time = time.strftime("%Y-%m-%d-%H-%M-%S")
@@ -158,40 +144,18 @@ def PMFO(objective_function, lb, ub, dimension, population_size, iterations, num
 		convergence_curve[iteration - 1] = best_flame_score # Obs: convergence_curve[iteration]
 		iteration += 1
 		# Display best fitness along the iteration
-		print(["Core: " + str(rank) + " at iteration " + str(iteration - 2) + " the best fitness is " + str(best_flame_score)])
-
-		# ------- Parallel -------
-		# Migrations
-		if iteration % policy["interval_emi_imm"] == 0:
-			migration_index = np.zeros(policy["number_emi_imm"] * size, dtype=int)
-			run_migration(comm, moth_pos, dimension, migration_index, policy, rank, size)
-		# ------------------------
+		print(["At iteration " + str(iteration - 2) + " the best fitness is " + str(best_flame_score)])
 
 	timer_end = time.time()
 	sol.end_time = time.strftime("%Y-%m-%d-%H-%M-%S")
 	sol.runtime = timer_end - timer_start
 	sol.convergence = convergence_curve
-	sol.optimizer = "MPI_MFO"
+	sol.optimizer = "MFO"
 	sol.objf_name = objective_function.__name__
 	sol.dataset_name = dataset_name
 	sol.best_individual = best_flame_pos
 	sol.labels_pred = np.array(best_labels_pred, dtype=np.int64)
 	sol.fitness = best_flame_score
-	sol.policy = policy
 
-	# ------- Parallel -------
-	# Select best solution
-	comm.Barrier()
-	best_sol = None
-	if rank == 0:
-		best_fitness = sol.fitness
-		best_sol = sol
-		for k in range(1, size):
-			sol = comm.recv(source=k)
-			if best_fitness < sol.fitness:
-				best_fitness = sol.fitness
-				best_sol = sol
-		best_sol.save()
-	else:
-		comm.send(sol, dest=0)
-	# ------------------------
+	sol.save()
+	# return sol

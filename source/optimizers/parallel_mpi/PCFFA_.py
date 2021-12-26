@@ -18,13 +18,12 @@ Created on Sun May 29 00:49:35 2016
 # % -------------------------------------------------------- %
 # ------- Parallel -------
 from mpi4py import MPI
-from source.models import run_migration
+from utils.models import run_migration
 # ------------------------
 
-from source.solution import Solution
+from utils.solution import Solution
 
 import numpy as np
-import math
 import time
 
 def alpha_new(alpha, num_generations):
@@ -61,10 +60,8 @@ def PFFA(objective_function, lb, ub, dimension, population_size, iterations, num
 
 	# ns(i,:)=Lb+(Ub-Lb).*rand(1,d);
 	# ns = np.zeros((population_size, dimension))
-	# ------- Parallel -------
 	ns = population[rank * population_size:population_size * (rank + 1)] # np.random.uniform(0, 1, (population_size, dimension)) * (ub - lb) + lb
-	# ------------------------
-	
+
 	lightn = np.ones(population_size)
 	lightn.fill(float("inf"))
 	labels_pred = np.zeros((population_size, len(points)))
@@ -74,7 +71,7 @@ def PFFA(objective_function, lb, ub, dimension, population_size, iterations, num
 	convergence = []
 	sol = Solution()
 
-	print("MPI_FFA is optimizing \"" + objective_function.__name__ + "\"")
+	print("P_MPI_FFA is optimizing \"" + objective_function.__name__ + "\"")
 
 	timer_start = time.time()
 	sol.start_time = time.strftime("%Y-%m-%d-%H-%M-%S")
@@ -124,7 +121,7 @@ def PFFA(objective_function, lb, ub, dimension, population_size, iterations, num
 				# Update moves
 				if lightn[i] > lighto[j]: # Brighter and more attractive
 					beta0 = 1
-					beta = (beta0 - beta_min) * math.exp(-gamma * r ** 2) + beta_min
+					beta = (beta0 - beta_min) * np.exp(-gamma * r ** 2) + beta_min
 					tmpf = alpha * (np.random.rand(dimension) - 0.5) * scale
 					ns[i, :] = ns[i, :] * (1 - beta) + nso[j, :] * beta + tmpf
 
@@ -144,7 +141,7 @@ def PFFA(objective_function, lb, ub, dimension, population_size, iterations, num
 	sol.end_time = time.strftime("%Y-%m-%d-%H-%M-%S")
 	sol.runtime = timer_end - timer_start
 	sol.convergence = convergence
-	sol.optimizer = "MPI_FFA"
+	sol.optimizer = "P_MPI_FFA"
 	sol.objf_name = objective_function.__name__
 	sol.dataset_name = dataset_name
 	sol.labels_pred = np.array(labels_pred_best, dtype=np.int64)

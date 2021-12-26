@@ -6,12 +6,12 @@ Created on Thu May 26 02:00:55 2016
 """
 # ------- Parallel -------
 from mpi4py import MPI
-from source.models import run_migration
+from utils.models import run_migration
 # ------------------------
-from source.solution import Solution
+
+from utils.solution import Solution
 
 import numpy as np
-import random
 import time
 
 def PBAT(objective_function, lb, ub, dimension, population_size, iterations, num_clusters, points, metric, dataset_name, policy, population):
@@ -23,7 +23,6 @@ def PBAT(objective_function, lb, ub, dimension, population_size, iterations, num
 	# ------------------------
 
 	num_features = int(dimension / num_clusters)
-
 	# lb = -50
 	# ub = 50
 
@@ -39,18 +38,16 @@ def PBAT(objective_function, lb, ub, dimension, population_size, iterations, num
 	convergence_curve = []
 
 	# Initialize the population/solutions
-	# ------- Parallel -------
 	pop = population[rank * population_size:population_size * (rank + 1)] # np.random.rand(population_size, dimension) * (ub - lb) + lb
-	# ------------------------
 	labels_pred = np.zeros((population_size, len(points)))
 	fitness = np.zeros(population_size)
 
 	S = np.zeros((population_size, dimension))
 	S = np.copy(pop)
 
-	# Initialize solution for the final results
+	# Initialize solution for the final best_sols
 	sol = Solution()
-	print("MPI_BAT is optimizing \"" + objective_function.__name__ + "\"")
+	print("P_MPI_BAT is optimizing \"" + objective_function.__name__ + "\"")
 
 	# Initialize timer for the experiment
 	timer_start = time.time()
@@ -67,16 +64,16 @@ def PBAT(objective_function, lb, ub, dimension, population_size, iterations, num
 		labels_pred[k, :] = labels_pred_values
 
 	# Find the initial best solution
-	fmin = min(fitness)
+	fmin = np.min(fitness)
 	I = np.argmin(fitness)
-	best = pop[I, :]	
+	best = pop[I, :]
 	best_labels_pred = labels_pred[I, :]
 
 	# Main loop
 	for i in range(iterations):
 		# Loop over all bats(solutions)
 		for j in range(population_size):
-			Q[j] = Qmin + (Qmin - Qmax) * random.random()
+			Q[j] = Qmin + (Qmin - Qmax) * np.random.random()
 			v[j, :] = v[j, :] + (pop[j, :] - best) * Q[j]
 			S[j, :] = pop[j, :] + v[j, :]
 
@@ -84,7 +81,7 @@ def PBAT(objective_function, lb, ub, dimension, population_size, iterations, num
 			pop = np.clip(pop, lb, ub)
 
 			# Pulse rate
-			if random.random() > r:
+			if np.random.random() > r:
 				S[j, :] = best + 0.001 * np.random.randn(dimension)
 
 			# Evaluate new solutions
@@ -99,7 +96,7 @@ def PBAT(objective_function, lb, ub, dimension, population_size, iterations, num
 			labels_pred_new = labels_pred_values
 
 			# Update if the solution improves
-			if ((fnew != np.inf) and (fnew <= fitness[j]) and (random.random() < A)):
+			if ((fnew != np.inf) and (fnew <= fitness[j]) and (np.random.random() < A)):
 				pop[j, :] = np.copy(S[j, :])
 				fitness[j] = fnew
 				labels_pred[j, :] = labels_pred_new
@@ -125,7 +122,7 @@ def PBAT(objective_function, lb, ub, dimension, population_size, iterations, num
 	sol.end_time = time.strftime("%Y-%m-%d-%H-%M-%S")
 	sol.runtime = timer_end - timer_start
 	sol.convergence = convergence_curve
-	sol.optimizer = "MPI_BAT"
+	sol.optimizer = "P_MPI_BAT"
 	sol.objf_name = objective_function.__name__
 	sol.dataset_name = dataset_name
 	sol.labels_pred = np.array(best_labels_pred, dtype=np.int64)

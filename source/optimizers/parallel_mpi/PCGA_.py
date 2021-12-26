@@ -5,13 +5,12 @@ Created on Sat Feb  24 20:18:05 2019
 """
 # ------- Parallel -------
 from mpi4py import MPI
-from source.models import run_migration
+from utils.models import run_migration
 # ------------------------
 
-from source.solution import Solution
+from utils.solution import Solution
 
 import numpy as np
-import random
 import time
 
 def crossover_populaton(population, scores, population_size, crossover_probability, keep):
@@ -44,7 +43,7 @@ def crossover_populaton(population, scores, population_size, crossover_probabili
 		# pair of parents selection
 		parent1, parent2 = pair_selection(population, scores, population_size)
 		crossover_length = min(len(parent1), len(parent2))
-		parents_crossover_probability = random.uniform(0.0, 1.0)
+		parents_crossover_probability = np.random.uniform(0.0, 1.0)
 		if parents_crossover_probability < crossover_probability:
 			offspring1, offspring2 = crossover(crossover_length, parent1, parent2)
 		else:
@@ -82,8 +81,8 @@ def mutate_populaton(population, population_size, mutation_probability, keep, lb
 	"""
 	for k in range(keep, population_size):
 		# Mutation
-		offspring_mutation_probability = random.uniform(0.0, 1.0)
-		if offspring_mutation_probability < mutation_probability:
+		offspringMutationProbability = np.random.uniform(0.0, 1.0)
+		if offspringMutationProbability < mutation_probability:
 			mutation(population[k], len(population[k]), lb, ub)
 
 def elitism(population, scores, best_individual, best_score):
@@ -107,12 +106,12 @@ def elitism(population, scores, best_individual, best_score):
 	"""
 
 	# get the worst individual
-	worst_fitness_id = select_worst_individual(scores)
+	worstFitnessId = select_worst_individual(scores)
 
 	# replace worst cromosome with best one from previous generation if its fitness is less than the other
-	if scores[worst_fitness_id] > best_score:
-		population[worst_fitness_id] = np.copy(best_individual)
-		scores[worst_fitness_id] = np.copy(best_score)
+	if scores[worstFitnessId] > best_score:
+		population[worstFitnessId] = np.copy(best_individual)
+		scores[worstFitnessId] = np.copy(best_score)
 
 def select_worst_individual(scores):
 	"""    
@@ -179,18 +178,17 @@ def roulette_wheel_selection_id(scores, population_size):
 	"""
 
 	# reverse score because minimum value should have more chance of selection
-	reverse = max(scores) + min(scores)
+	reverse = np.max(scores) + np.min(scores)
 	if reverse == float("inf"):
-		return random.randint(0, population_size - 1)
-	reverse_scores = reverse - scores.copy()
-	sum_scores = sum(reverse_scores)
-	
-	if sum_scores == float("inf"):
-		return random.randint(0, population_size - 1)
-	pick = random.uniform(0, sum_scores)
+		return np.random.randint(0, population_size)
+	reverseScores = reverse - scores.copy()
+	sumScores = np.sum(reverseScores)
+	if sumScores == float("inf"):
+		return np.random.randint(0, population_size)
+	pick = np.random.uniform(0, sumScores)
 	current = 0
 	for individual_id in range(population_size):
-		current += reverse_scores[individual_id]
+		current += reverseScores[individual_id]
 		if current > pick:
 			return individual_id
 
@@ -215,7 +213,7 @@ def crossover(individual_length, parent1, parent2):
 			offspring2: The second updated parent individual of the pair
 	"""
 	# The point at which crossover takes place between two parents.
-	crossover_point = random.randint(0, individual_length - 1)
+	crossover_point = np.random.randint(0, individual_length)
 	# The new offspring will have its first half of its genes taken from the first parent and second half of its genes taken from the second parent.
 	offspring1 = np.concatenate([parent1[0:crossover_point], parent2[crossover_point:]])
 	# The new offspring will have its first half of its genes taken from the second parent and second half of its genes taken from the first parent.
@@ -243,8 +241,8 @@ def mutation(offspring, individual_length, lb, ub):
 	N/A
 	"""
 
-	mutation_index = random.randint(0, individual_length - 1)
-	mutation_value = random.uniform(lb, ub)
+	mutation_index = np.random.randint(0, individual_length)
+	mutation_value = np.random.uniform(lb, ub)
 	offspring[mutation_index] = mutation_value
 
 def clear_dups(population, lb, ub):
@@ -391,9 +389,7 @@ def PGA(objective_function, lb, ub, dimension, population_size, iterations, num_
 	best_score = float("inf")
 	best_labels_pred = np.full(len(points), np.inf)
 
-	# ------- Parallel -------
 	ga = population[rank * population_size:population_size * (rank + 1)] # np.random.uniform(0, 1, (population_size, dimension)) * (ub - lb) + lb
-	# ------------------------
 	scores = np.full(population_size, float("inf"))
 
 	for k in range(dimension):
@@ -401,7 +397,7 @@ def PGA(objective_function, lb, ub, dimension, population_size, iterations, num_
 
 	convergence_curve = np.zeros(iterations)
 
-	print("MPI_GA is optimizing \"" + objective_function.__name__ + "\"")
+	print("P_MPI_GA is optimizing \"" + objective_function.__name__ + "\"")
 
 	timer_start = time.time()
 	sol.start_time = time.strftime("%Y-%m-%d-%H-%M-%S")
@@ -418,7 +414,7 @@ def PGA(objective_function, lb, ub, dimension, population_size, iterations, num_
 		scores, best_labels_pred, best_individual = calculate_cost(
 			objective_function, ga, dimension, population_size, lb, ub, num_clusters, points, metric)
 
-		best_score = min(scores)
+		best_score = np.min(scores)
 
 		# Sort from best to worst
 		ga, scores = sort_population(ga, scores)
@@ -439,7 +435,7 @@ def PGA(objective_function, lb, ub, dimension, population_size, iterations, num_
 	sol.end_time = time.strftime("%Y-%m-%d-%H-%M-%S")
 	sol.runtime = timer_end - timer_start
 	sol.convergence = convergence_curve
-	sol.optimizer = "MPI_GA"
+	sol.optimizer = "P_MPI_GA"
 	sol.dataset_name = dataset_name
 	sol.labels_pred = np.array(best_labels_pred, dtype=np.int64)
 	sol.objf_name = objective_function.__name__

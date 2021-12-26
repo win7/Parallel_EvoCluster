@@ -3,11 +3,6 @@ Created on Sat Feb  24 20:18:05 2019
 
 @author: Raneem
 """
-# ------- Parallel -------
-from mpi4py import MPI
-from source.models import run_migration
-# ------------------------
-
 from source.solution import Solution
 
 import numpy as np
@@ -350,7 +345,7 @@ def sort_population(population, scores):
 
 	return population, scores
 
-def PGA(objective_function, lb, ub, dimension, population_size, iterations, num_clusters, points, metric, dataset_name, policy, population):
+def GA(objective_function, lb, ub, dimension, population_size, iterations, num_clusters, points, metric, dataset_name, population):
 	"""    
 	This is the main method which implements GA
 
@@ -374,12 +369,6 @@ def PGA(objective_function, lb, ub, dimension, population_size, iterations, num_
 	obj
 			sol: The solution obtained from running the algorithm
 	"""
-	# ------- Parallel -------
-	comm = MPI.COMM_WORLD
-	rank = comm.Get_rank()
-	size = comm.Get_size()
-	population_size = int(population_size / 24)
-	# ------------------------
 
 	cp = 1  # crossover Probability
 	mp = 0.01  # Mutation Probability
@@ -391,9 +380,7 @@ def PGA(objective_function, lb, ub, dimension, population_size, iterations, num_
 	best_score = float("inf")
 	best_labels_pred = np.full(len(points), np.inf)
 
-	# ------- Parallel -------
-	ga = population[rank * population_size:population_size * (rank + 1)] # np.random.uniform(0, 1, (population_size, dimension)) * (ub - lb) + lb
-	# ------------------------
+	ga = np.copy(population) # np.random.uniform(0, 1, (population_size, dimension)) * (ub - lb) + lb
 	scores = np.full(population_size, float("inf"))
 
 	for k in range(dimension):
@@ -401,7 +388,7 @@ def PGA(objective_function, lb, ub, dimension, population_size, iterations, num_
 
 	convergence_curve = np.zeros(iterations)
 
-	print("MPI_GA is optimizing \"" + objective_function.__name__ + "\"")
+	print("GA is optimizing \"" + objective_function.__name__ + "\"")
 
 	timer_start = time.time()
 	sol.start_time = time.strftime("%Y-%m-%d-%H-%M-%S")
@@ -424,14 +411,7 @@ def PGA(objective_function, lb, ub, dimension, population_size, iterations, num_
 		ga, scores = sort_population(ga, scores)
 
 		convergence_curve[k] = best_score
-		print(["Core: " + str(rank) + " at iteration " + str(k) + " the best fitness is " + str(best_score)])
-
-		# ------- Parallel -------
-		# Migrations
-		if k % policy["interval_emi_imm"] == 0:
-			migration_index = np.zeros(policy["number_emi_imm"] * size, dtype=int)
-			run_migration(comm, ga, dimension, migration_index, policy, rank, size)
-		# ------------------------
+		print(["At iteration " + str(k) + " the best fitness is " + str(best_score)])
 
 	best_labels_pred = np.asarray(best_labels_pred)
 	timer_end = time.time()
@@ -439,26 +419,11 @@ def PGA(objective_function, lb, ub, dimension, population_size, iterations, num_
 	sol.end_time = time.strftime("%Y-%m-%d-%H-%M-%S")
 	sol.runtime = timer_end - timer_start
 	sol.convergence = convergence_curve
-	sol.optimizer = "MPI_GA"
+	sol.optimizer = "GA"
 	sol.dataset_name = dataset_name
 	sol.labels_pred = np.array(best_labels_pred, dtype=np.int64)
 	sol.objf_name = objective_function.__name__
 	sol.fitness = best_score
-	sol.policy = policy
 
-	# ------- Parallel -------
-	# Select best solution
-	comm.Barrier()
-	best_sol = None
-	if rank == 0:
-		best_fitness = sol.fitness
-		best_sol = sol
-		for k in range(1, size):
-			sol = comm.recv(source=k)
-			if best_fitness < sol.fitness:
-				best_fitness = sol.fitness
-				best_sol = sol
-		best_sol.save()
-	else:
-		comm.send(sol, dest=0)
-	# ------------------------
+	sol.save()
+	# return sol

@@ -4,25 +4,13 @@ Created on Mon May 16 00:27:50 2016
 
 @author: Hossam Faris
 """
-# ------- Parallel -------
-from mpi4py import MPI
-from source.models import run_migration
-# ------------------------
-
 from source.solution import Solution
 
 import numpy as np
 import time
 import random
 
-def PGWO(objective_function, lb, ub, dimension, population_size, iterations, num_clusters, points, metric, dataset_name, policy, population):
-	# ------- Parallel -------
-	comm = MPI.COMM_WORLD
-	rank = comm.Get_rank()
-	size = comm.Get_size()
-	population_size = int(population_size / 24)
-	# ------------------------
-
+def GWO(objective_function, lb, ub, dimension, population_size, iterations, num_clusters, points, metric, dataset_name, population):
 	num_features = int(dimension / num_clusters)
 	# iterations = 1000
 	# lb = -100
@@ -45,16 +33,14 @@ def PGWO(objective_function, lb, ub, dimension, population_size, iterations, num
 
 	# Initialize the positions of search agents
 	# positions = np.zeros((population_size, dimension))
-	# ------- Parallel -------
-	positions = population[rank * population_size:population_size * (rank + 1)] # np.random.uniform(0, 1, (population_size, dimension)) * (ub - lb) + lb
-	# ------------------------
+	positions = np.copy(population) # np.random.uniform(0, 1, (population_size, dimension)) * (ub - lb) + lb
 	labels_pred = np.zeros((population_size, len(points)))
 
 	convergence_curve = np.zeros(iterations)
 	sol = Solution()
 
 	# Loop counter
-	print("MPI_GWO is optimizing \"" + objective_function.__name__ + "\"")
+	print("GWO is optimizing \"" + objective_function.__name__ + "\"")
 
 	timer_start = time.time()
 	sol.start_time = time.strftime("%Y-%m-%d-%H-%M-%S")
@@ -137,40 +123,18 @@ def PGWO(objective_function, lb, ub, dimension, population_size, iterations, num
 				positions[i, j] = (X1 + X2 + X3) / 3 # Equation (3.7)
 
 		convergence_curve[k] = alpha_score
-		print(["Core: " + str(rank) + " at iteration " + str(k) + " the best fitness is " + str(alpha_score)])
-
-		# ------- Parallel -------
-		# Migrations
-		if k % policy["interval_emi_imm"] == 0:
-			migration_index = np.zeros(policy["number_emi_imm"] * size, dtype=int)
-			run_migration(comm, positions, dimension, migration_index, policy, rank, size)
-		# ------------------------
+		print(["At iteration " + str(k) + " the best fitness is " + str(alpha_score)])
 
 	timer_end = time.time()
 	sol.end_time = time.strftime("%Y-%m-%d-%H-%M-%S")
 	sol.runtime = timer_end - timer_start
 	sol.convergence = convergence_curve
-	sol.optimizer = "MPI_GWO"
+	sol.optimizer = "GWO"
 	sol.objf_name = objective_function.__name__
 	sol.dataset_name = dataset_name
 	sol.labels_pred = np.array(alpha_labels, dtype=np.int64)
 	sol.best_individual = alpha_pos
 	sol.fitness = alpha_score
-	sol.policy = policy
 
-	# ------- Parallel -------
-	# Select best solution
-	comm.Barrier()
-	best_sol = None
-	if rank == 0:
-		best_fitness = sol.fitness
-		best_sol = sol
-		for k in range(1, size):
-			sol = comm.recv(source=k)
-			if best_fitness < sol.fitness:
-				best_fitness = sol.fitness
-				best_sol = sol
-		best_sol.save()
-	else:
-		comm.send(sol, dest=0)
-	# ------------------------
+	sol.save()
+	# return sol

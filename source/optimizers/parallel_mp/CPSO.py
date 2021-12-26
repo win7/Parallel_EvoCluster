@@ -4,25 +4,13 @@ Created on Fri Mar 15 21:04:15 2019
 
 @author: Raneem
 """
-# ------- Parallel -------
-from mpi4py import MPI
-from source.models import run_migration
-# ------------------------
-
 from source.solution import Solution
 
 import numpy as np
 import time
 import random
 
-def PPSO(objective_function, lb, ub, dimension, population_size, iterations, num_clusters, points, metric, dataset_name, policy, population):
-	# ------- Parallel -------
-	comm = MPI.COMM_WORLD
-	rank = comm.Get_rank()
-	size = comm.Get_size()
-	population_size = int(population_size / 24)
-	# ------------------------
-
+def PSO(objective_function, lb, ub, dimension, population_size, iterations, num_clusters, points, metric, dataset_name, population):
 	num_features = int(dimension / num_clusters)
 	# PSO parameters
 	# dimension = 30
@@ -53,13 +41,11 @@ def PPSO(objective_function, lb, ub, dimension, population_size, iterations, num
 	g_best_score = float("inf")
 	g_best_labels_pred = np.full(len(points), np.inf)
 
-	# ------- Parallel -------
-	pos = population[rank * population_size:population_size * (rank + 1)] # np.random.uniform(0, 1, (population_size, dimension)) * (ub - lb) + lb
-	# ------------------------
-	
+	pos = np.copy(population) # np.random.uniform(0, 1, (population_size, dimension)) * (ub - lb) + lb
+
 	convergence_curve = np.zeros(iterations)
 
-	print("MPI_PSO is optimizing \"" + objective_function.__name__ + "\"")
+	print("PSO is optimizing \"" + objective_function.__name__ + "\"")
 
 	timer_start = time.time()
 	sol.start_time = time.strftime("%Y-%m-%d-%H-%M-%S")
@@ -104,40 +90,18 @@ def PPSO(objective_function, lb, ub, dimension, population_size, iterations, num
 				pos[i, j] = pos[i, j] + vel[i, j]
 
 		convergence_curve[k] = g_best_score
-		print(["Core: " + str(rank) + " at iteration " + str(k) + " the best fitness is " + str(g_best_score)])
-
-		# ------- Parallel -------
-		# Migrations
-		if k % policy["interval_emi_imm"] == 0:
-			migration_index = np.zeros(policy["number_emi_imm"] * size, dtype=int)
-			run_migration(comm, pos, dimension, migration_index, policy, rank, size)
-		# ------------------------
+		print(["At iteration " + str(k) + " the best fitness is " + str(g_best_score)])
 
 	timer_end = time.time()
 	sol.end_time = time.strftime("%Y-%m-%d-%H-%M-%S")
 	sol.runtime = timer_end - timer_start
 	sol.convergence = convergence_curve
-	sol.optimizer = "MPI_PSO"
+	sol.optimizer = "PSO"
 	sol.objf_name = objective_function.__name__
 	sol.dataset_name = dataset_name
 	sol.labels_pred = np.array(g_best_labels_pred, dtype=np.int64)
 	sol.best_individual = g_best
 	sol.fitness = g_best_score
-	sol.policy = policy
 
-	# ------- Parallel -------
-	# Select best solution
-	comm.Barrier()
-	best_sol = None
-	if rank == 0:
-		best_fitness = sol.fitness
-		best_sol = sol
-		for k in range(1, size):
-			sol = comm.recv(source=k)
-			if best_fitness < sol.fitness:
-				best_fitness = sol.fitness
-				best_sol = sol
-		best_sol.save()
-	else:
-		comm.send(sol, dest=0)
-	# ------------------------
+	sol.save()
+	# return sol

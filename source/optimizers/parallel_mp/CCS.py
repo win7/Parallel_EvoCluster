@@ -4,11 +4,6 @@ Created on Tue May 24 13:13:28 2016
 
 @author: Hossam Faris
 """
-# ------- Parallel -------
-from mpi4py import MPI
-from source.models import run_migration
-# ------------------------
-
 from source.solution import Solution
 
 import math
@@ -77,14 +72,7 @@ def empty_nests(nest, pa, population_size, dimension):
 
 	return temp_nest
 
-def PCS(objective_function, lb, ub, dimension, population_size, iterations, num_clusters, points, metric, dataset_name, policy, population):
-	# ------- Parallel -------
-	comm = MPI.COMM_WORLD
-	rank = comm.Get_rank()
-	size = comm.Get_size()
-	population_size = int(population_size / 24)
-	# ------------------------
-
+def CS(objective_function, lb, ub, dimension, population_size, iterations, num_clusters, points, metric, dataset_name, population):
 	# lb = -1
 	# ub = 1
 	# population_size = 50
@@ -99,9 +87,7 @@ def PCS(objective_function, lb, ub, dimension, population_size, iterations, num_
 	convergence = []
 
 	# RInitialize nests randomely
-	# ------- Parallel -------
-	nest = population[rank * population_size:population_size * (rank + 1)] # np.random.rand(population_size, dimension) * (ub - lb) + lb
-	# ------------------------
+	nest = np.copy(population) # np.random.rand(population_size, dimension) * (ub - lb) + lb
 	labels_pred = np.zeros((population_size, len(points)))
 
 	new_nest = np.zeros((population_size, dimension))
@@ -115,7 +101,7 @@ def PCS(objective_function, lb, ub, dimension, population_size, iterations, num_
 
 	sol = Solution()
 
-	print("MPI_CS is optimizing \"" + objective_function.__name__ + "\"")
+	print("CS is optimizing \"" + objective_function.__name__ + "\"")
 
 	timer_start = time.time()
 	sol.start_time = time.strftime("%Y-%m-%d-%H-%M-%S")
@@ -145,40 +131,18 @@ def PCS(objective_function, lb, ub, dimension, population_size, iterations, num_
 			best_labels_pred = best_labels
 
 		convergence.append(fmin)
-		print(["Core: " + str(rank) + " at iteration " + str(k) + " the best fitness is " + str(fmin)])
-
-		# ------- Parallel -------
-		# Migrations
-		if k % policy["interval_emi_imm"] == 0:
-			migration_index = np.zeros(policy["number_emi_imm"] * size, dtype=int)
-			run_migration(comm, nest, dimension, migration_index, policy, rank, size)
-		# ------------------------
-
+		print(["At iteration " + str(k) + " the best fitness is " + str(fmin)])
+	
 	timer_end = time.time()
 	sol.end_time = time.strftime("%Y-%m-%d-%H-%M-%S")
 	sol.runtime = timer_end - timer_start
 	sol.convergence = convergence
-	sol.optimizer = "MPI_CS"
+	sol.optimizer = "CS"
 	sol.objf_name = objective_function.__name__
 	sol.dataset_name = dataset_name
 	sol.best_individual = best_nest
 	sol.labels_pred = np.array(best_labels_pred, dtype=np.int64)
 	sol.fitness = fmin
-	sol.policy = policy
 
-	# ------- Parallel -------
-	# Select best solution
-	comm.Barrier()
-	best_sol = None
-	if rank == 0:
-		best_fitness = sol.fitness
-		best_sol = sol
-		for k in range(1, size):
-			sol = comm.recv(source=k)
-			if best_fitness < sol.fitness:
-				best_fitness = sol.fitness
-				best_sol = sol
-		best_sol.save()
-	else:
-		comm.send(sol, dest=0)
-	# ------------------------
+	sol.save()
+	# return sol

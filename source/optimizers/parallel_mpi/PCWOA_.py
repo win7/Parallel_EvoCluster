@@ -6,15 +6,13 @@ Created on Mon May 16 14:19:49 2016
 """
 # ------- Parallel -------
 from mpi4py import MPI
-from source.models import run_migration
+from utils.models import run_migration
 # ------------------------
 
-from source.solution import Solution
+from utils.solution import Solution
 
 import numpy as np
-import math
 import time
-import random
 
 def PWOA(objective_function, lb, ub, dimension, population_size, iterations, num_clusters, points, metric, dataset_name, policy, population):
 	# ------- Parallel -------
@@ -38,9 +36,7 @@ def PWOA(objective_function, lb, ub, dimension, population_size, iterations, num
 
 	# Initialize the positions of search agents
 	# positions = np.zeros((population_size, dimension))
-	# ------- Parallel -------
 	positions = population[rank * population_size:population_size * (rank + 1)] # np.random.uniform(0, 1, (population_size, dimension)) * (ub - lb) + lb
-	# ------------------------
 	labels_pred = np.zeros((population_size, len(points)))
 
 	# Initialize convergence
@@ -48,7 +44,7 @@ def PWOA(objective_function, lb, ub, dimension, population_size, iterations, num
 
 	sol = Solution()
 
-	print("MPI_WOA is optimizing \"" + objective_function.__name__ + "\"")
+	print("P_MPI_WOA is optimizing \"" + objective_function.__name__ + "\"")
 
 	timer_start = time.time()
 	sol.start_time = time.strftime("%Y-%m-%d-%H-%M-%S")
@@ -89,21 +85,21 @@ def PWOA(objective_function, lb, ub, dimension, population_size, iterations, num
 
 		# Update the Position of search agents
 		for i in range(population_size):
-			r1 = random.random() # r1 is a random number in [0,1]
-			r2 = random.random() # r2 is a random number in [0,1]
+			r1 = np.random.random() # r1 is a random number in [0,1]
+			r2 = np.random.random() # r2 is a random number in [0,1]
 
 			A = 2 * a * r1 - a # Eq. (2.3) in the paper
 			C = 2 * r2 # Eq. (2.4) in the paper
 
 			b = 1 # parameters in Eq. (2.5)
-			l = (a2 - 1) * random.random() + 1 # parameters in Eq. (2.5)
+			l = (a2 - 1) * np.random.random() + 1 # parameters in Eq. (2.5)
 
-			p = random.random() # p in Eq. (2.6)
+			p = np.random.random() # p in Eq. (2.6)
 
 			for j in range(dimension):
 				if p < 0.5:
 					if abs(A) >= 1:
-						rand_leader_index = math.floor(population_size * random.random())
+						rand_leader_index = np.floor(population_size * np.random.random()).astype(int)
 						X_rand = positions[rand_leader_index, :]
 						D_X_rand = abs(C * X_rand[j] - positions[i, j])
 						positions[i, j] = X_rand[j] - A * D_X_rand
@@ -113,7 +109,7 @@ def PWOA(objective_function, lb, ub, dimension, population_size, iterations, num
 				elif p >= 0.5:
 					distance2_leader = abs(leader_pos[j] - positions[i, j])
 					# Eq. (2.5)
-					positions[i, j] = distance2_leader * math.exp(b * l) * math.cos(l * 2 * math.pi) + leader_pos[j]
+					positions[i, j] = distance2_leader * np.exp(b * l) * np.cos(l * 2 * np.pi) + leader_pos[j]
 
 		convergence_curve[iteration] = leader_score
 		iteration += 1
@@ -130,7 +126,7 @@ def PWOA(objective_function, lb, ub, dimension, population_size, iterations, num
 	sol.end_time = time.strftime("%Y-%m-%d-%H-%M-%S")
 	sol.runtime = timer_end - timer_start
 	sol.convergence = convergence_curve
-	sol.optimizer = "MPI_WOA"
+	sol.optimizer = "P_MPI_WOA"
 	sol.objf_name = objective_function.__name__
 	sol.dataset_name = dataset_name
 	sol.best = leader_score

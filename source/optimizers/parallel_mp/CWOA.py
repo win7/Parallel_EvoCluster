@@ -4,11 +4,6 @@ Created on Mon May 16 14:19:49 2016
 
 @author: hossam
 """
-# ------- Parallel -------
-from mpi4py import MPI
-from source.models import run_migration
-# ------------------------
-
 from source.solution import Solution
 
 import numpy as np
@@ -16,14 +11,7 @@ import math
 import time
 import random
 
-def PWOA(objective_function, lb, ub, dimension, population_size, iterations, num_clusters, points, metric, dataset_name, policy, population):
-	# ------- Parallel -------
-	comm = MPI.COMM_WORLD
-	rank = comm.Get_rank()
-	size = comm.Get_size()
-	population_size = int(population_size / 24)
-	# ------------------------
-
+def WOA(objective_function, lb, ub, dimension, population_size, iterations, num_clusters, points, metric, dataset_name, population):
 	num_features = int(dimension / num_clusters)
 	# dimension = 30
 	# population_size = SearchAgents_no = 50
@@ -38,9 +26,7 @@ def PWOA(objective_function, lb, ub, dimension, population_size, iterations, num
 
 	# Initialize the positions of search agents
 	# positions = np.zeros((population_size, dimension))
-	# ------- Parallel -------
-	positions = population[rank * population_size:population_size * (rank + 1)] # np.random.uniform(0, 1, (population_size, dimension)) * (ub - lb) + lb
-	# ------------------------
+	positions = np.copy(population) # np.random.uniform(0, 1, (population_size, dimension)) * (ub - lb) + lb
 	labels_pred = np.zeros((population_size, len(points)))
 
 	# Initialize convergence
@@ -48,7 +34,7 @@ def PWOA(objective_function, lb, ub, dimension, population_size, iterations, num
 
 	sol = Solution()
 
-	print("MPI_WOA is optimizing \"" + objective_function.__name__ + "\"")
+	print("WOA is optimizing \"" + objective_function.__name__ + "\"")
 
 	timer_start = time.time()
 	sol.start_time = time.strftime("%Y-%m-%d-%H-%M-%S")
@@ -117,41 +103,19 @@ def PWOA(objective_function, lb, ub, dimension, population_size, iterations, num
 
 		convergence_curve[iteration] = leader_score
 		iteration += 1
-		print(["Core: " + str(rank) + " at iteration " + str(iteration - 1) + " the best fitness is " + str(leader_score)])
-
-		# ------- Parallel -------
-		# Migrations
-		if iteration % policy["interval_emi_imm"] == 0:
-			migration_index = np.zeros(policy["number_emi_imm"] * size, dtype=int)
-			run_migration(comm, positions, dimension, migration_index, policy, rank, size)
-		# ------------------------
+		print(["At iteration " + str(iteration - 1) + " the best fitness is " + str(leader_score)])
 
 	timer_end = time.time()
 	sol.end_time = time.strftime("%Y-%m-%d-%H-%M-%S")
 	sol.runtime = timer_end - timer_start
 	sol.convergence = convergence_curve
-	sol.optimizer = "MPI_WOA"
+	sol.optimizer = "WOA"
 	sol.objf_name = objective_function.__name__
 	sol.dataset_name = dataset_name
 	sol.best = leader_score
 	sol.best_individual = leader_pos
 	sol.labels_pred = np.array(leader_labels, dtype=np.int64)
 	sol.fitness = leader_score
-	sol.policy = policy
 
-	# ------- Parallel -------
-	# Select best solution
-	comm.Barrier()
-	best_sol = None
-	if rank == 0:
-		best_fitness = sol.fitness
-		best_sol = sol
-		for k in range(1, size):
-			sol = comm.recv(source=k)
-			if best_fitness < sol.fitness:
-				best_fitness = sol.fitness
-				best_sol = sol
-		best_sol.save()
-	else:
-		comm.send(sol, dest=0)
-	# ------------------------
+	sol.save()
+	# return sol

@@ -16,11 +16,6 @@ Created on Sun May 29 00:49:35 2016
 # % for the design of a spring (benchmark)                   %
 # % by Xin-She Yang (Cambridge University) Copyright @2009   %
 # % -------------------------------------------------------- %
-# ------- Parallel -------
-from mpi4py import MPI
-from source.models import run_migration
-# ------------------------
-
 from source.solution import Solution
 
 import numpy as np
@@ -34,14 +29,7 @@ def alpha_new(alpha, num_generations):
 	alpha = (1 - delta) * alpha
 	return alpha
 
-def PFFA(objective_function, lb, ub, dimension, population_size, iterations, num_clusters, points, metric, dataset_name, policy, population):
-	# ------- Parallel -------
-	comm = MPI.COMM_WORLD
-	rank = comm.Get_rank()
-	size = comm.Get_size()
-	population_size = int(population_size / 24)
-	# ------------------------
-
+def FFA(objective_function, lb, ub, dimension, population_size, iterations, num_clusters, points, metric, dataset_name, population):
 	num_features = int(dimension / num_clusters)
 
 	# General parameters
@@ -61,10 +49,8 @@ def PFFA(objective_function, lb, ub, dimension, population_size, iterations, num
 
 	# ns(i,:)=Lb+(Ub-Lb).*rand(1,d);
 	# ns = np.zeros((population_size, dimension))
-	# ------- Parallel -------
-	ns = population[rank * population_size:population_size * (rank + 1)] # np.random.uniform(0, 1, (population_size, dimension)) * (ub - lb) + lb
-	# ------------------------
-	
+	ns = np.copy(population) # np.random.uniform(0, 1, (population_size, dimension)) * (ub - lb) + lb
+
 	lightn = np.ones(population_size)
 	lightn.fill(float("inf"))
 	labels_pred = np.zeros((population_size, len(points)))
@@ -74,7 +60,7 @@ def PFFA(objective_function, lb, ub, dimension, population_size, iterations, num
 	convergence = []
 	sol = Solution()
 
-	print("MPI_FFA is optimizing \"" + objective_function.__name__ + "\"")
+	print("FFA is optimizing \"" + objective_function.__name__ + "\"")
 
 	timer_start = time.time()
 	sol.start_time = time.strftime("%Y-%m-%d-%H-%M-%S")
@@ -130,41 +116,19 @@ def PFFA(objective_function, lb, ub, dimension, population_size, iterations, num
 
 		# ns = np.clip(ns, lb, ub)
 		convergence.append(fbest)
-		print(["Core: " + str(rank) + " at iteration " + str(k) + " the best fitness is " + str(fbest)])
-
-		# ------- Parallel -------
-		# Migrations
-		if k % policy["interval_emi_imm"] == 0:
-			migration_index = np.zeros(policy["number_emi_imm"] * size, dtype=int)
-			run_migration(comm, ns, dimension, migration_index, policy, rank, size)
-		# ------------------------
+		print(["At iteration " + str(k) + " the best fitness is " + str(fbest)])
 	# End main loop
 	
 	timer_end = time.time()
 	sol.end_time = time.strftime("%Y-%m-%d-%H-%M-%S")
 	sol.runtime = timer_end - timer_start
 	sol.convergence = convergence
-	sol.optimizer = "MPI_FFA"
+	sol.optimizer = "FFA"
 	sol.objf_name = objective_function.__name__
 	sol.dataset_name = dataset_name
 	sol.labels_pred = np.array(labels_pred_best, dtype=np.int64)
 	sol.best_individual = nbest
 	sol.fitness = fbest
-	sol.policy = policy
 
-	# ------- Parallel -------
-	# Select best solution
-	comm.Barrier()
-	best_sol = None
-	if rank == 0:
-		best_fitness = sol.fitness
-		best_sol = sol
-		for k in range(1, size):
-			sol = comm.recv(source=k)
-			if best_fitness < sol.fitness:
-				best_fitness = sol.fitness
-				best_sol = sol
-		best_sol.save()
-	else:
-		comm.send(sol, dest=0)
-	# ------------------------
+	sol.save()
+	# return sol

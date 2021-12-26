@@ -6,14 +6,13 @@ Created on Tue May 24 13:13:28 2016
 """
 # ------- Parallel -------
 from mpi4py import MPI
-from source.models import run_migration
+from utils.models import run_migration
 # ------------------------
 
-from source.solution import Solution
+from utils.solution import Solution
 
 import math
 import numpy as np
-import random
 import time
 
 def get_cuckoos(nest, best, lb, ub, population_size, dimension):
@@ -21,7 +20,7 @@ def get_cuckoos(nest, best, lb, ub, population_size, dimension):
 	temp_nest = np.zeros((population_size, dimension))
 	temp_nest = np.array(nest)
 	beta = 3 / 2
-	sigma = (math.gamma(1 + beta) * math.sin(math.pi * beta / 2) /
+	sigma = (math.gamma(1 + beta) * np.sin(np.pi * beta / 2) /
 			 (math.gamma((1 + beta) / 2) * beta * 2 ** ((beta - 1) / 2))) ** (1 / beta)
 
 	s = np.zeros(dimension)
@@ -60,19 +59,19 @@ def get_best_nest(nest, labels_pred, new_nest, fitness, population_size, dimensi
 			temp_labels[k, :] = new_labels
 
 	# Find the current best
-	fmin = min(fitness)
+	fmin = np.min(fitness)
 	I = np.argmin(fitness)
-	best_local = temp_nest[I, :]
+	bestlocal = temp_nest[I, :]
 	best_labels = temp_labels[I, :]
 
-	return fmin, best_local, best_labels, temp_nest, fitness, temp_labels
+	return fmin, bestlocal, best_labels, temp_nest, fitness, temp_labels
 
 # Replace some nests by constructing new solutions/nests
 def empty_nests(nest, pa, population_size, dimension):
 	# Discovered or not
 	temp_nest = np.zeros((population_size, dimension))
 	K = np.random.uniform(0, 1, (population_size, dimension)) > pa
-	step_size = random.random() * (nest[np.random.permutation(population_size), :] - nest[np.random.permutation(population_size), :])
+	step_size = np.random.random() * (nest[np.random.permutation(population_size), :] - nest[np.random.permutation(population_size), :])
 	temp_nest = nest + step_size * K
 
 	return temp_nest
@@ -99,9 +98,7 @@ def PCS(objective_function, lb, ub, dimension, population_size, iterations, num_
 	convergence = []
 
 	# RInitialize nests randomely
-	# ------- Parallel -------
 	nest = population[rank * population_size:population_size * (rank + 1)] # np.random.rand(population_size, dimension) * (ub - lb) + lb
-	# ------------------------
 	labels_pred = np.zeros((population_size, len(points)))
 
 	new_nest = np.zeros((population_size, dimension))
@@ -115,14 +112,14 @@ def PCS(objective_function, lb, ub, dimension, population_size, iterations, num_
 
 	sol = Solution()
 
-	print("MPI_CS is optimizing \"" + objective_function.__name__ + "\"")
+	print("P_MPI_CS is optimizing \"" + objective_function.__name__ + "\"")
 
 	timer_start = time.time()
 	sol.start_time = time.strftime("%Y-%m-%d-%H-%M-%S")
 
 	fmin, best_nest, best_labels, nest, fitness, labels_pred = get_best_nest(
 		nest, labels_pred, new_nest, fitness, population_size, dimension, objective_function, num_clusters, points, metric)
-	
+
 	# Main loop counter
 	for k in range(iterations):
 		# Generate new solutions (but keep the current best)
@@ -145,6 +142,7 @@ def PCS(objective_function, lb, ub, dimension, population_size, iterations, num_
 			best_labels_pred = best_labels
 
 		convergence.append(fmin)
+
 		print(["Core: " + str(rank) + " at iteration " + str(k) + " the best fitness is " + str(fmin)])
 
 		# ------- Parallel -------
@@ -158,7 +156,7 @@ def PCS(objective_function, lb, ub, dimension, population_size, iterations, num_
 	sol.end_time = time.strftime("%Y-%m-%d-%H-%M-%S")
 	sol.runtime = timer_end - timer_start
 	sol.convergence = convergence
-	sol.optimizer = "MPI_CS"
+	sol.optimizer = "P_MPI_CS"
 	sol.objf_name = objective_function.__name__
 	sol.dataset_name = dataset_name
 	sol.best_individual = best_nest

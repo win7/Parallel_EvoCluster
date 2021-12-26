@@ -4,11 +4,6 @@ Created on Wed May 11 17:06:34 2016
 
 @author: hossam
 """
-# ------- Parallel -------
-from mpi4py import MPI
-from source.models import run_migration
-# ------------------------
-
 from sklearn.preprocessing import normalize
 from source.solution import Solution
 
@@ -52,14 +47,7 @@ def roulette_wheel_selection(weights):
 	choice = chosen_index
 	return choice
 
-def PMVO(objective_function, lb, ub, dimension, population_size, iterations, num_clusters, points, metric, dataset_name, policy, population):
-	# ------- Parallel -------
-	comm = MPI.COMM_WORLD
-	rank = comm.Get_rank()
-	size = comm.Get_size()
-	population_size = int(population_size / 24)
-	# ------------------------
-
+def MVO(objective_function, lb, ub, dimension, population_size, iterations, num_clusters, points, metric, dataset_name, population):
 	num_features = int(dimension / num_clusters)
 
 	# dimension = 30
@@ -71,9 +59,7 @@ def PMVO(objective_function, lb, ub, dimension, population_size, iterations, num
 	WEP_max = 1
 	WEP_min = 0.2
 
-	# ------- Parallel -------
-	universes = population[rank * population_size:population_size * (rank + 1)] # np.random.uniform(0, 1, (population_size, dimension)) * (ub - lb) + lb
-	# ------------------------
+	universes = np.copy(population) # np.random.uniform(0, 1, (population_size, dimension)) * (ub - lb) + lb
 
 	sorted_universes = np.copy(universes)
 
@@ -90,7 +76,7 @@ def PMVO(objective_function, lb, ub, dimension, population_size, iterations, num
 
 	iteration = 1
 
-	print("MPI_MVO is optimizing \"" + objective_function.__name__ + "\"")
+	print("MVO is optimizing \"" + objective_function.__name__ + "\"")
 
 	timer_start = time.time()
 	sol.start_time = time.strftime("%Y-%m-%d-%H-%M-%S")
@@ -157,40 +143,18 @@ def PMVO(objective_function, lb, ub, dimension, population_size, iterations, num
 
 		convergence[iteration - 1] = best_universe_inflation_rate
 		iteration += 1
-		print(["Core: " + str(rank) + " at iteration " + str(iteration - 2) + " the best fitness is " + str(best_universe_inflation_rate)])
-
-		# ------- Parallel -------
-		# Migrations
-		if iteration % policy["interval_emi_imm"] == 0:
-			migration_index = np.zeros(policy["number_emi_imm"] * size, dtype=int)
-			run_migration(comm, universes, dimension, migration_index, policy, rank, size)
-		# ------------------------
+		print(["At iteration " + str(iteration - 2) + " the best fitness is " + str(best_universe_inflation_rate)])
 
 	timer_end = time.time()
 	sol.end_time = time.strftime("%Y-%m-%d-%H-%M-%S")
 	sol.runtime = timer_end - timer_start
 	sol.convergence = convergence
-	sol.optimizer = "MPI_MVO"
+	sol.optimizer = "MVO"
 	sol.objf_name = objective_function.__name__
 	sol.dataset_name = dataset_name
 	sol.best_individual = best_universe
 	sol.labels_pred = np.array(labels_pred_best, dtype=np.int64)
 	sol.fitness = best_universe_inflation_rate
-	sol.policy = policy
 
-	# ------- Parallel -------
-	# Select best solution
-	comm.Barrier()
-	best_sol = None
-	if rank == 0:
-		best_fitness = sol.fitness
-		best_sol = sol
-		for k in range(1, size):
-			sol = comm.recv(source=k)
-			if best_fitness < sol.fitness:
-				best_fitness = sol.fitness
-				best_sol = sol
-		best_sol.save()
-	else:
-		comm.send(sol, dest=0)
-	# ------------------------
+	sol.save()
+	# return sol

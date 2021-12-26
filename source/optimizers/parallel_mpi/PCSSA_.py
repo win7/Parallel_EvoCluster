@@ -1,14 +1,12 @@
 # ------- Parallel -------
 from mpi4py import MPI
-from source.models import run_migration
+from utils.models import run_migration
 # ------------------------
 
-from source.solution import Solution
+from utils.solution import Solution
 
 import numpy as np
-import math
 import time
-import random
 
 def PSSA(objective_function, lb, ub, dimension, population_size, iterations, num_clusters, points, metric, dataset_name, policy, population):
 	# ------- Parallel -------
@@ -28,9 +26,7 @@ def PSSA(objective_function, lb, ub, dimension, population_size, iterations, num
 	convergence_curve = np.zeros(iterations)
 
 	# Initialize the positions of salps
-	# ------- Parallel -------
 	salp_positions = population[rank * population_size:population_size * (rank + 1)] # np.random.uniform(0, 1, (population_size, dimension)) * (ub - lb) + lb
-	# ------------------------
 	salp_fitness = np.full(population_size, float("inf"))
 	salp_labels_pred = np.full((population_size, len(points)), np.inf)
 
@@ -41,13 +37,13 @@ def PSSA(objective_function, lb, ub, dimension, population_size, iterations, num
 
 	sol = Solution()
 
-	print("MPI_SSA is optimizing \"" + objective_function.__name__ + "\"")
+	print("P_MPI_SSA is optimizing \"" + objective_function.__name__ + "\"")
 
 	timer_start = time.time()
 	sol.start_time = time.strftime("%Y-%m-%d-%H-%M-%S")
 
 	for k in range(population_size):
-		# Evaluate moths
+	   # Evaluate moths
 		startpts = np.reshape(salp_positions[k, :], (num_clusters, num_features))
 
 		if objective_function.__name__ in ["SSE", "SC", "DI"]:
@@ -77,15 +73,15 @@ def PSSA(objective_function, lb, ub, dimension, population_size, iterations, num
 		# Number of flames Eq. (3.14) in the paper
 		# Flame_no=round(population_size-iteration*((population_size-1)/iterations));
 
-		c1 = 2 * math.exp(-(4 * iteration / iterations) ** 2) # Eq. (3.2) in the paper
+		c1 = 2 * np.exp(-(4 * iteration / iterations) ** 2) # Eq. (3.2) in the paper
 
 		for i in range(population_size):
 			salp_positions = np.transpose(salp_positions)
 
 			if i < population_size / 2:
-				for j in range(dimension):
-					c2 = random.random()
-					c3 = random.random()
+				for j in range(0, dimension):
+					c2 = np.random.random()
+					c3 = np.random.random()
 					# Eq. (3.1) in the paper
 					if c3 < 0.5:
 						salp_positions[j, i] = food_position[j] + 0.1 * c1 * ((ub - lb) * c2 + lb)
@@ -100,7 +96,7 @@ def PSSA(objective_function, lb, ub, dimension, population_size, iterations, num
 			salp_positions = np.transpose(salp_positions)
 
 		for k in range(population_size):
-			# Check if salps go out of the search spaceand bring it back
+		   # Check if salps go out of the search spaceand bring it back
 			salp_positions[k, :] = np.clip(salp_positions[k, :], lb, ub)
 
 			startpts = np.reshape(salp_positions[k, :], (num_clusters, num_features))
@@ -134,7 +130,7 @@ def PSSA(objective_function, lb, ub, dimension, population_size, iterations, num
 	sol.end_time = time.strftime("%Y-%m-%d-%H-%M-%S")
 	sol.runtime = timer_end - timer_start
 	sol.convergence = convergence_curve
-	sol.optimizer = "MPI_SSA"
+	sol.optimizer = "P_MPI_SSA"
 	sol.objf_name = objective_function.__name__
 	sol.dataset_name = dataset_name
 	sol.labels_pred = np.array(food_labels_pred, dtype=np.int64)

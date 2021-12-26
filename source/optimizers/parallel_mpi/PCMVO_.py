@@ -6,16 +6,14 @@ Created on Wed May 11 17:06:34 2016
 """
 # ------- Parallel -------
 from mpi4py import MPI
-from source.models import run_migration
+from utils.models import run_migration
 # ------------------------
 
 from sklearn.preprocessing import normalize
-from source.solution import Solution
+from utils.solution import Solution
 
 import numpy as np
-import math
 import time
-import random
 
 def normr(matrix):
 	""" 
@@ -30,7 +28,7 @@ def normr(matrix):
 
 	# if statement to enforce dtype float
 	# B = normalize(matrix,norm="l2",axis=1)
-	B = (matrix - min(matrix)) / (max(matrix) - min(matrix))
+	B = (matrix - np.min(matrix)) / (np.max(matrix) - np.min(matrix))
 	B = np.reshape(B, -1)
 	return B
 
@@ -43,7 +41,7 @@ def randk(t):
 
 def roulette_wheel_selection(weights):
 	accumulation = np.cumsum(weights)
-	p = random.random() * accumulation[-1]
+	p = np.random.random() * accumulation[-1]
 	chosen_index = -1
 	for index in range(len(accumulation)):
 		if (accumulation[index] > p):
@@ -71,9 +69,7 @@ def PMVO(objective_function, lb, ub, dimension, population_size, iterations, num
 	WEP_max = 1
 	WEP_min = 0.2
 
-	# ------- Parallel -------
 	universes = population[rank * population_size:population_size * (rank + 1)] # np.random.uniform(0, 1, (population_size, dimension)) * (ub - lb) + lb
-	# ------------------------
 
 	sorted_universes = np.copy(universes)
 
@@ -90,7 +86,7 @@ def PMVO(objective_function, lb, ub, dimension, population_size, iterations, num
 
 	iteration = 1
 
-	print("MPI_MVO is optimizing \"" + objective_function.__name__ + "\"")
+	print("P_MPI_MVO is optimizing \"" + objective_function.__name__ + "\"")
 
 	timer_start = time.time()
 	sol.start_time = time.strftime("%Y-%m-%d-%H-%M-%S")
@@ -98,7 +94,7 @@ def PMVO(objective_function, lb, ub, dimension, population_size, iterations, num
 		# Eq. (3.3) in the paper
 		WEP = WEP_min + iteration * ((WEP_max - WEP_min) / iterations)
 
-		TDR = 1 - (math.pow(iteration, 1 / 6) / math.pow(iterations, 1 / 6))
+		TDR = 1 - (np.power(iteration, 1 / 6) / np.power(iterations, 1 / 6))
 
 		inflation_rates = [0] * len(universes)
 
@@ -134,7 +130,7 @@ def PMVO(objective_function, lb, ub, dimension, population_size, iterations, num
 		for i in range(1, population_size):
 			back_hole_index = i
 			for j in range(dimension):
-				r1 = random.random()
+				r1 = np.random.random()
 				if r1 < normalized_sorted_Inflation_rates[i]:
 					white_hole_index = roulette_wheel_selection(-sorted_inflation_rates)
 
@@ -144,16 +140,16 @@ def PMVO(objective_function, lb, ub, dimension, population_size, iterations, num
 					universes[back_hole_index, j] = sorted_universes[white_hole_index, j]
 					labels_pred[back_hole_index, j] = sorted_labels[white_hole_index, j]
 
-				r2 = random.random()
+				r2 = np.random.random()
 
 				if r2 < WEP:
-					r3 = random.random()
+					r3 = np.random.random()
 					if r3 < 0.5:
 						# random.uniform(0, 1) + lb);
-						universes[i, j] = best_universe[j] + TDR * ((ub - lb) * random.random() + lb)
+						universes[i, j] = best_universe[j] + TDR * ((ub - lb) * np.random.random() + lb)
 					if r3 > 0.5:
 						# random.uniform(0, 1) + lb);
-						universes[i, j] = best_universe[j] - TDR * ((ub - lb) * random.random() + lb)
+						universes[i, j] = best_universe[j] - TDR * ((ub - lb) * np.random.random() + lb)
 
 		convergence[iteration - 1] = best_universe_inflation_rate
 		iteration += 1
@@ -170,7 +166,7 @@ def PMVO(objective_function, lb, ub, dimension, population_size, iterations, num
 	sol.end_time = time.strftime("%Y-%m-%d-%H-%M-%S")
 	sol.runtime = timer_end - timer_start
 	sol.convergence = convergence
-	sol.optimizer = "MPI_MVO"
+	sol.optimizer = "P_MPI_MVO"
 	sol.objf_name = objective_function.__name__
 	sol.dataset_name = dataset_name
 	sol.best_individual = best_universe
