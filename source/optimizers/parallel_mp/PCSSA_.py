@@ -1,13 +1,10 @@
-from source.solution import Solution
+from utils.solution import Solution
 
 # ------- Parallel -------
 import pymp
 # ------------------------
-
 import numpy as np
-import math
 import time
-import random
 
 def PSSA(objective_function, lb, ub, dimension, population_size, iterations, num_clusters, points, metric, dataset_name, population, cores):
 	num_features = int(dimension / num_clusters)
@@ -20,25 +17,29 @@ def PSSA(objective_function, lb, ub, dimension, population_size, iterations, num
 	convergence_curve = np.zeros(iterations)
 
 	# Initialize the positions of salps
-	# ------- Parallel -------
 	salp_positions = pymp.shared.array((population_size, dimension), dtype="float")
 	salp_positions[:] = np.copy(population) # np.random.uniform(0, 1, (population_size, dimension)) * (ub - lb) + lb
+	# salp_fitness = np.full(population_size, float("inf"))
 	salp_fitness = pymp.shared.array(population_size, dtype="float")
 	salp_fitness.fill(float("inf"))
+	# salp_labels_pred = np.full((population_size, len(points)), np.inf)
 	salp_labels_pred = pymp.shared.array((population_size, len(points)), dtype="float")
 	salp_labels_pred.fill(float("inf"))
 
+	# food_position = np.zeros(dimension)
 	food_position = pymp.shared.array(dimension, dtype="float")
+
+	# food_fitness = float("inf")
 	food_fitness = pymp.shared.array(1, dtype="float")
 	food_fitness.fill(float("inf"))
+	# food_labels_pred = np.full(len(points), np.inf)
 	food_labels_pred = pymp.shared.array(len(points), dtype="float")
 	food_labels_pred.fill(float("inf"))
-	# ------------------------
 	# Moth_fitness=np.fell(float("inf"))
 
 	sol = Solution()
 
-	print("MP_SSA is optimizing \"" + objective_function.__name__ + "\"")
+	print("P_MP_SSA is optimizing \"" + objective_function.__name__ + "\"")
 
 	timer_start = time.time()
 	sol.start_time = time.strftime("%Y-%m-%d-%H-%M-%S")
@@ -64,11 +65,12 @@ def PSSA(objective_function, lb, ub, dimension, population_size, iterations, num
 	sorted_labels_pred = np.copy(salp_labels_pred[I, :])
 
 	food_position[:] = np.copy(sorted_salps[0, :])
+	# food_fitness = sorted_salps_fitness[0]
 	food_fitness[0] = sorted_salps_fitness[0]
 	food_labels_pred[:] = sorted_labels_pred[0]
 	
 	convergence_curve[0] = food_fitness[0]
-	print(["At iteration 0 the best fitness is " + str(food_fitness)])
+	print(["At iteration 0 the best fitness is " + str(food_fitness[0])])
 	
 	iteration = 1
 
@@ -77,15 +79,15 @@ def PSSA(objective_function, lb, ub, dimension, population_size, iterations, num
 		# Number of flames Eq. (3.14) in the paper
 		# Flame_no=round(population_size-iteration*((population_size-1)/iterations));
 
-		c1 = 2 * math.exp(-(4 * iteration / iterations) ** 2) # Eq. (3.2) in the paper
+		c1 = 2 * np.exp(-(4 * iteration / iterations) ** 2) # Eq. (3.2) in the paper
 
 		for i in range(population_size):
 			salp_positions = np.transpose(salp_positions)
 
 			if i < population_size / 2:
-				for j in range(dimension):
-					c2 = random.random()
-					c3 = random.random()
+				for j in range(0, dimension):
+					c2 = np.random.random()
+					c3 = np.random.random()
 					# Eq. (3.1) in the paper
 					if c3 < 0.5:
 						salp_positions[j, i] = food_position[j] + 0.1 * c1 * ((ub - lb) * c2 + lb)
@@ -131,7 +133,7 @@ def PSSA(objective_function, lb, ub, dimension, population_size, iterations, num
 	sol.end_time = time.strftime("%Y-%m-%d-%H-%M-%S")
 	sol.runtime = timer_end - timer_start
 	sol.convergence = convergence_curve
-	sol.optimizer = "MP_SSA"
+	sol.optimizer = "P_MP_SSA"
 	sol.objf_name = objective_function.__name__
 	sol.dataset_name = dataset_name
 	sol.labels_pred = np.array(food_labels_pred, dtype=np.int64)

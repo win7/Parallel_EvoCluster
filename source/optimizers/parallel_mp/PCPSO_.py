@@ -4,27 +4,26 @@ Created on Fri Mar 15 21:04:15 2019
 
 @author: Raneem
 """
-from source.solution import Solution
+from utils.solution import Solution
 
 # ------- Parallel -------
 import pymp
 # ------------------------
-
 import numpy as np
 import time
-import random
+from datetime import datetime
 
 def PPSO(objective_function, lb, ub, dimension, population_size, iterations, num_clusters, points, metric, dataset_name, population, cores):
 	num_features = int(dimension / num_clusters)
 	# PSO parameters
 	# dimension = 30
 	# iterations = 200
-	# v_max = 6
+	# Vmax = 6
 	# population_size = 50     #population size
 	# lb = -10
 	# ub = 10
 
-	v_max = 6  # raneem
+	Vmax = 6  # raneem
 	w_max = 0.9
 	w_min = 0.2
 	c1 = 2
@@ -36,26 +35,30 @@ def PPSO(objective_function, lb, ub, dimension, population_size, iterations, num
 
 	vel = np.zeros((population_size, dimension))
 
-	# ------- Parallel -------
+	# p_best_score = np.zeros(population_size)
 	p_best_score = pymp.shared.array(population_size, dtype="float")
 	p_best_score.fill(float("inf"))
+	# p_best = np.zeros((population_size, dimension))
 	p_best = pymp.shared.array((population_size, dimension), dtype="float")
+	# p_best_labels_pred = np.full((population_size, len(points)), np.inf)
 	p_best_labels_pred = pymp.shared.array((population_size, len(points)), dtype="float")
 	p_best_labels_pred.fill(float("inf"))
 
+	# g_best = np.zeros(dimension)
 	g_best = pymp.shared.array(dimension, dtype="float")
+	# g_best_score = float("inf")
 	g_best_score = pymp.shared.array(1, dtype="float")
 	g_best_score.fill(float("inf"))
+	# g_best_labels_pred = np.full(len(points), np.inf)
 	g_best_labels_pred = pymp.shared.array(len(points), dtype="int")
 	g_best_labels_pred.fill(float("inf"))
 
 	pos = pymp.shared.array((population_size, dimension), dtype="float")
 	pos[:] = np.copy(population) # np.random.uniform(0, 1, (population_size, dimension)) * (ub - lb) + lb
-	# ------------------------
 
 	convergence_curve = np.zeros(iterations)
 
-	print("MP_PSO is optimizing \"" + objective_function.__name__ + "\"")
+	print("P_MP_PSO is optimizing \"" + objective_function.__name__ + "\"")
 
 	timer_start = time.time()
 	sol.start_time = time.strftime("%Y-%m-%d-%H-%M-%S")
@@ -85,21 +88,20 @@ def PPSO(objective_function, lb, ub, dimension, population_size, iterations, num
 						g_best[:] = pos[i, :].copy()
 						g_best_labels_pred[:] = np.copy(labels_pred)
 		# ------------------------
-
 		# Update the W of PSO
 		w = w_max - k * ((w_max - w_min) / iterations)  # check this
 
 		for i in range(population_size):
 			for j in range(dimension):
-				r1 = random.random()
-				r2 = random.random()
+				r1 = np.random.random()
+				r2 = np.random.random()
 				vel[i, j] = w * vel[i, j] + c1 * r1 * (p_best[i, j] - pos[i, j]) + c2 * r2 * (g_best[j] - pos[i, j])
 
-				if(vel[i, j] > v_max):
-					vel[i, j] = v_max
+				if(vel[i, j] > Vmax):
+					vel[i, j] = Vmax
 
-				if(vel[i, j] < -v_max):
-					vel[i, j] = -v_max
+				if(vel[i, j] < -Vmax):
+					vel[i, j] = -Vmax
 
 				pos[i, j] = pos[i, j] + vel[i, j]
 
@@ -110,7 +112,7 @@ def PPSO(objective_function, lb, ub, dimension, population_size, iterations, num
 	sol.end_time = time.strftime("%Y-%m-%d-%H-%M-%S")
 	sol.runtime = timer_end - timer_start
 	sol.convergence = convergence_curve
-	sol.optimizer = "MP_PSO"
+	sol.optimizer = "P_MP_PSO"
 	sol.objf_name = objective_function.__name__
 	sol.dataset_name = dataset_name
 	sol.labels_pred = np.array(g_best_labels_pred, dtype=np.int64)

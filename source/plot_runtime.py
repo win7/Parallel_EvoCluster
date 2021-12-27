@@ -16,7 +16,7 @@ def run(results_directory, optimizer, objective_function, dataset_list, iteratio
 
 			bars = pd.DataFrame(detailed_data, columns=["Optimizer", "ExecutionTime"])
 			bars = bars.sort_values(by=["ExecutionTime"], ascending=False)
-			ax = bars.plot(x="Optimizer", y="ExecutionTime", kind="barh", xlabel="Optimizers", ylabel="Runtime (ms)", title="", legend=True)
+			ax = bars.plot(x="Optimizer", y="ExecutionTime", kind="barh", xlabel="Optimizers", ylabel="Runtime (s)", title="", legend=True)
 			# annotate
 			ax.bar_label(ax.containers[0], label_type="edge", rotation=0)
 			ax.set_xlabel("Runtime (ms)")

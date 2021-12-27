@@ -135,10 +135,10 @@ def run(optimizer, objective_function, dataset_list, num_runs, params, export_fl
 	CnvgHeader = []
 
 	if labels_exist:
-		datasets_directory = "datasets/"  # the directory where the dataset is stored
+		datasets_directory = "../datasets/"  # the directory where the dataset is stored
 	else:
 		# the directory where the dataset is stored
-		datasets_directory = "datasets/unsupervised/"
+		datasets_directory = "../datasets/unsupervised/"
 
 	results_directory = "results/{}/".format(time.strftime("%Y-%m-%d_%H:%M:%S"))
 	Path(results_directory).mkdir(parents=True, exist_ok=True)
@@ -264,7 +264,7 @@ def run(optimizer, objective_function, dataset_list, num_runs, params, export_fl
 						params.save()
 
 						# print(optimizer[i])
-						if "MPI" == optimizer[i][:3]:
+						if "MPI_" == optimizer[i][:4]:
 							print("Parallel MPI version")
 							# print(os.system("pwd"))
 							# result = os.system("mpirun -np 2 python -m mpi4py pyfile hello_mpi.py")
@@ -280,7 +280,7 @@ def run(optimizer, objective_function, dataset_list, num_runs, params, export_fl
 							""" prog.communicate()  # Returns (stdoutdata, stderrdata): stdout and stderr are ignored, here
 							if prog.returncode:
 								raise Exception('program returned error code {0}'.format(prog.returncode)) """
-						elif "P_MP_" == optimizer[i][:5]:
+						elif "MP_" == optimizer[i][:3]:
 							print("Parallel MP version")
 							os.system("python selector.py")
 						else:

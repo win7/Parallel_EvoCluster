@@ -16,12 +16,14 @@ Created on Sun May 29 00:49:35 2016
 # % for the design of a spring (benchmark)                   %
 # % by Xin-She Yang (Cambridge University) Copyright @2009   %
 # % -------------------------------------------------------- %
-from utils.solution import Solution
+from source.solution import Solution
 
 # ------- Parallel -------
 import pymp
 # ------------------------
+
 import numpy as np
+import math
 import time
 
 def alpha_new(alpha, num_generations):
@@ -46,8 +48,7 @@ def PFFA(objective_function, lb, ub, dimension, population_size, iterations, num
 	beta_min = 0.20 # minimum value of beta
 	gamma = 1 # Absorption coefficient
 
-	# zn = np.ones(population_size)
-	# zn.fill(float("inf"))
+	# ------- Parallel -------
 	zn = pymp.shared.array(population_size, dtype="float")
 	zn.fill(float("inf"))
 
@@ -56,20 +57,18 @@ def PFFA(objective_function, lb, ub, dimension, population_size, iterations, num
 	ns = pymp.shared.array((population_size, dimension), dtype="float")
 	ns[:] = np.copy(population) # np.random.uniform(0, 1, (population_size, dimension)) * (ub - lb) + lb
 
-	# lightn = np.ones(population_size)
-	# lightn.fill(float("inf"))
 	lightn = pymp.shared.array(population_size, dtype="float")
 	lightn.fill(float("inf"))
 
-	# labels_pred = np.zeros((population_size, len(points)))
 	labels_pred = pymp.shared.array((population_size, len(points)), dtype="float")
+	# ------------------------
 
 	# [ns,lightn]=init_ffa(population_size,d,Lb,Ub,u0)
 
 	convergence = []
 	sol = Solution()
 
-	print("P_MP_FFA is optimizing \"" + objective_function.__name__ + "\"")
+	print("MP_FFA is optimizing \"" + objective_function.__name__ + "\"")
 
 	timer_start = time.time()
 	sol.start_time = time.strftime("%Y-%m-%d-%H-%M-%S")
@@ -79,6 +78,7 @@ def PFFA(objective_function, lb, ub, dimension, population_size, iterations, num
 		# This line of reducing alpha is optional
 		alpha = alpha_new(alpha, iterations)
 
+		# Evaluate new solutions (for all population_size fireflies)
 		# ------- Parallel -------
 		with pymp.Parallel(cores) as p:
 			# Evaluate new solutions (for all population_size fireflies)
@@ -96,7 +96,7 @@ def PFFA(objective_function, lb, ub, dimension, population_size, iterations, num
 		# Ranking fireflies by their light intensity/objectives
 		lightn = np.sort(zn)
 		index = np.argsort(zn)
-		ns[:] = ns[index, :]
+		ns = ns[index, :]
 
 		# Find the current best
 		nso = ns
@@ -113,7 +113,8 @@ def PFFA(objective_function, lb, ub, dimension, population_size, iterations, num
 		# light_best,alpha,beta_min,gamma,Lb,Ub);
 
 		scale = np.ones(dimension) * abs(ub - lb)
-		# ------- Parallel -------
+
+		""" # ------- Parallel -------
 		with pymp.Parallel(cores) as p:
 			for i in p.range(population_size):
 				# The attractiveness parameter beta=exp(-gamma*r)
@@ -128,7 +129,18 @@ def PFFA(objective_function, lb, ub, dimension, population_size, iterations, num
 						beta = (beta0 - beta_min) * np.exp(-gamma * r ** 2) + beta_min
 						tmpf = alpha * (np.random.rand(dimension) - 0.5) * scale
 						ns[i, :] = ns[i, :] * (1 - beta) + nso[j, :] * beta + tmpf
-		# ------------------------
+		# ------------------------ """
+		for i in range(population_size):
+			# The attractiveness parameter beta=exp(-gamma*r)
+			for j in range(population_size):
+				r = np.sqrt(np.sum((ns[i, :] - ns[j, :]) ** 2))
+				# r = 1
+				# Update moves
+				if lightn[i] > lighto[j]: # Brighter and more attractive
+					beta0 = 1
+					beta = (beta0 - beta_min) * math.exp(-gamma * r ** 2) + beta_min
+					tmpf = alpha * (np.random.rand(dimension) - 0.5) * scale
+					ns[i, :] = ns[i, :] * (1 - beta) + nso[j, :] * beta + tmpf
 
 		# ns = np.clip(ns, lb, ub)
 		convergence.append(fbest)
@@ -139,7 +151,7 @@ def PFFA(objective_function, lb, ub, dimension, population_size, iterations, num
 	sol.end_time = time.strftime("%Y-%m-%d-%H-%M-%S")
 	sol.runtime = timer_end - timer_start
 	sol.convergence = convergence
-	sol.optimizer = "P_MP_FFA"
+	sol.optimizer = "MP_FFA"
 	sol.objf_name = objective_function.__name__
 	sol.dataset_name = dataset_name
 	sol.labels_pred = np.array(labels_pred_best, dtype=np.int64)

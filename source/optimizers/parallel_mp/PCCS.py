@@ -4,7 +4,7 @@ Created on Tue May 24 13:13:28 2016
 
 @author: Hossam Faris
 """
-from utils.solution import Solution
+from source.solution import Solution
 
 # ------- Parallel -------
 import pymp
@@ -12,6 +12,7 @@ import pymp
 
 import math
 import numpy as np
+import random
 import time
 
 def get_cuckoos(nest, best, lb, ub, population_size, dimension):
@@ -19,7 +20,7 @@ def get_cuckoos(nest, best, lb, ub, population_size, dimension):
 	temp_nest = np.zeros((population_size, dimension))
 	temp_nest = np.array(nest)
 	beta = 3 / 2
-	sigma = (math.gamma(1 + beta) * np.sin(np.pi * beta / 2) /
+	sigma = (math.gamma(1 + beta) * math.sin(math.pi * beta / 2) /
 			 (math.gamma((1 + beta) / 2) * beta * 2 ** ((beta - 1) / 2))) ** (1 / beta)
 
 	s = np.zeros(dimension)
@@ -37,14 +38,13 @@ def get_cuckoos(nest, best, lb, ub, population_size, dimension):
 def get_best_nest(nest, labels_pred, new_nest, fitness, population_size, dimension, objective_function, num_clusters, points, metric, cores):
 	num_features = int(dimension / num_clusters)
 	
+	# ------- Parallel -------
 	# Evaluating all new solutions
-	# temp_nest = np.zeros((population_size, dimension))
 	temp_nest = pymp.shared.array((population_size, dimension), dtype="float")
 	temp_nest[:] = np.copy(nest)
 	temp_labels = pymp.shared.array((population_size, len(points)), dtype="float")
 	temp_labels[:] = np.copy(labels_pred)
 
-	# ------- Parallel -------
 	with pymp.Parallel(cores) as p:
 		for k in p.range(population_size):
 			# for k=1:size(nest,1),
@@ -64,19 +64,19 @@ def get_best_nest(nest, labels_pred, new_nest, fitness, population_size, dimensi
 	# ------------------------
 
 	# Find the current best
-	fmin = np.min(fitness)
+	fmin = min(fitness)
 	I = np.argmin(fitness)
-	bestlocal = temp_nest[I, :]
+	best_local = temp_nest[I, :]
 	best_labels = temp_labels[I, :]
 
-	return fmin, bestlocal, best_labels, temp_nest, fitness, temp_labels
+	return fmin, best_local, best_labels, temp_nest, fitness, temp_labels
 
 # Replace some nests by constructing new solutions/nests
 def empty_nests(nest, pa, population_size, dimension):
 	# Discovered or not
 	temp_nest = np.zeros((population_size, dimension))
 	K = np.random.uniform(0, 1, (population_size, dimension)) > pa
-	step_size = np.random.random() * (nest[np.random.permutation(population_size), :] - nest[np.random.permutation(population_size), :])
+	step_size = random.random() * (nest[np.random.permutation(population_size), :] - nest[np.random.permutation(population_size), :])
 	temp_nest = nest + step_size * K
 
 	return temp_nest
@@ -96,22 +96,23 @@ def PCS(objective_function, lb, ub, dimension, population_size, iterations, num_
 	convergence = []
 
 	# RInitialize nests randomely
-	nest = population # np.random.rand(population_size, dimension) * (ub - lb) + lb
+	nest = np.copy(population) # np.random.rand(population_size, dimension) * (ub - lb) + lb
 	labels_pred = np.zeros((population_size, len(points)))
 
 	new_nest = np.zeros((population_size, dimension))
-	new_nest[:] = np.copy(nest)
+	new_nest = np.copy(nest)
 
 	best_nest = [0] * dimension
 	best_labels_pred = [0] * len(points)
 
-	# fitness = np.zeros(population_size)
+	# ------- Parallel -------
 	fitness = pymp.shared.array(population_size, dtype="float")
 	fitness.fill(float("inf"))
+	# ------------------------
 
 	sol = Solution()
 
-	print("P_MP_CS is optimizing \"" + objective_function.__name__ + "\"")
+	print("MP_CS is optimizing \"" + objective_function.__name__ + "\"")
 
 	timer_start = time.time()
 	sol.start_time = time.strftime("%Y-%m-%d-%H-%M-%S")
@@ -142,12 +143,12 @@ def PCS(objective_function, lb, ub, dimension, population_size, iterations, num_
 
 		convergence.append(fmin)
 		print(["At iteration " + str(k) + " the best fitness is " + str(fmin)])
-
+	
 	timer_end = time.time()
 	sol.end_time = time.strftime("%Y-%m-%d-%H-%M-%S")
 	sol.runtime = timer_end - timer_start
 	sol.convergence = convergence
-	sol.optimizer = "P_MP_CS"
+	sol.optimizer = "MP_CS"
 	sol.objf_name = objective_function.__name__
 	sol.dataset_name = dataset_name
 	sol.best_individual = best_nest

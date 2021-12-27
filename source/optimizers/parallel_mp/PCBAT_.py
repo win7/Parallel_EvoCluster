@@ -4,14 +4,12 @@ Created on Thu May 26 02:00:55 2016
 
 @author: hossam
 """
-from source.solution import Solution
+from utils.solution import Solution
 
 # ------- Parallel -------
 import pymp
 # ------------------------
-
 import numpy as np
-import random
 import time
 
 def PBAT(objective_function, lb, ub, dimension, population_size, iterations, num_clusters, points, metric, dataset_name, population, cores):
@@ -27,24 +25,27 @@ def PBAT(objective_function, lb, ub, dimension, population_size, iterations, num
 	Qmax = 2 # Frequency maximum
 
 	# Initializing arrays
-	# ------- Parallel -------
+	# Q = np.zeros(population_size)  # Frequency
 	Q = pymp.shared.array(population_size, dtype="float")
+	# v = np.zeros((population_size, dimension))  # Velocities
 	v = pymp.shared.array((population_size, dimension), dtype="float")
 	convergence_curve = []
 
 	# Initialize the population/solutions
 	pop = pymp.shared.array((population_size, dimension), dtype="float")
 	pop[:] = np.copy(population) # np.random.rand(population_size, dimension) * (ub - lb) + lb
+	# labels_pred = np.zeros((population_size, len(points)))
 	labels_pred = pymp.shared.array((population_size, len(points)), dtype="float")
+	# fitness = np.zeros(population_size)
 	fitness = pymp.shared.array(population_size, dtype="float")
 
+	# S = np.zeros((population_size, dimension))
 	S = pymp.shared.array((population_size, dimension), dtype="float")
 	S[:] = np.copy(pop)
-	# ------------------------
 
 	# Initialize solution for the final results
 	sol = Solution()
-	print("MP_BAT is optimizing \"" + objective_function.__name__ + "\"")
+	print("P_MP_BAT is optimizing \"" + objective_function.__name__ + "\"")
 
 	# Initialize timer for the experiment
 	timer_start = time.time()
@@ -64,15 +65,13 @@ def PBAT(objective_function, lb, ub, dimension, population_size, iterations, num
 	# ------------------------
 
 	# Find the initial best solution
-	# ------- Parallel -------
 	fmin = pymp.shared.array(1, dtype="float")
-	fmin[0] = min(fitness)
+	fmin[0] = np.min(fitness)
 	I = np.argmin(fitness)
 	best = pymp.shared.array(dimension, dtype="float")
 	best[:] = pop[I, :]
 	best_labels_pred = pymp.shared.array(len(points), dtype="float")
 	best_labels_pred[:] = labels_pred[I, :]
-	# ------------------------
 
 	# Main loop
 	for i in range(iterations):
@@ -80,7 +79,7 @@ def PBAT(objective_function, lb, ub, dimension, population_size, iterations, num
 		# ------- Parallel -------
 		with pymp.Parallel(cores) as p:
 			for j in p.range(population_size):
-				Q[j] = Qmin + (Qmin - Qmax) * random.random()
+				Q[j] = Qmin + (Qmin - Qmax) * np.random.random()
 				v[j, :] = v[j, :] + (pop[j, :] - best) * Q[j]
 				S[j, :] = pop[j, :] + v[j, :]
 
@@ -88,7 +87,7 @@ def PBAT(objective_function, lb, ub, dimension, population_size, iterations, num
 				pop[:] = np.clip(pop, lb, ub)
 
 				# Pulse rate
-				if random.random() > r:
+				if np.random.random() > r:
 					S[j, :] = best + 0.001 * np.random.randn(dimension)
 
 				# Evaluate new solutions
@@ -104,7 +103,7 @@ def PBAT(objective_function, lb, ub, dimension, population_size, iterations, num
 
 				with p.lock:
 					# Update if the solution improves
-					if ((fnew != np.inf) and (fnew <= fitness[j]) and (random.random() < A)):
+					if ((fnew != np.inf) and (fnew <= fitness[j]) and (np.random.random() < A)):
 						pop[j, :] = np.copy(S[j, :])
 						fitness[j] = fnew
 						labels_pred[j, :] = labels_pred_new
@@ -124,7 +123,7 @@ def PBAT(objective_function, lb, ub, dimension, population_size, iterations, num
 	sol.end_time = time.strftime("%Y-%m-%d-%H-%M-%S")
 	sol.runtime = timer_end - timer_start
 	sol.convergence = convergence_curve
-	sol.optimizer = "MP_BAT"
+	sol.optimizer = "P_MP_BAT"
 	sol.objf_name = objective_function.__name__
 	sol.dataset_name = dataset_name
 	sol.labels_pred = np.array(best_labels_pred, dtype=np.int64)

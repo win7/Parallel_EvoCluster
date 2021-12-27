@@ -4,16 +4,13 @@ Created on Mon May 16 14:19:49 2016
 
 @author: hossam
 """
-from source.solution import Solution
+from utils.solution import Solution
 
 # ------- Parallel -------
 import pymp
 # ------------------------
-
 import numpy as np
-import math
 import time
-import random
 
 def PWOA(objective_function, lb, ub, dimension, population_size, iterations, num_clusters, points, metric, dataset_name, population, cores):
 	num_features = int(dimension / num_clusters)
@@ -23,10 +20,11 @@ def PWOA(objective_function, lb, ub, dimension, population_size, iterations, num
 	# ub = 100
 	# iterations = 500
 
-	# ------- Parallel -------
 	# Initialize position vector and score for the leader
+	# leader_pos = np.zeros(dimension)
 	leader_pos = pymp.shared.array(dimension, dtype="float")
 	# Change this to -inf for maximization problems
+	# leader_score = float("inf")
 	leader_score = pymp.shared.array(1, dtype="float")
 	leader_score.fill(float("inf"))
 
@@ -34,17 +32,16 @@ def PWOA(objective_function, lb, ub, dimension, population_size, iterations, num
 	# positions = np.zeros((population_size, dimension))
 	positions = pymp.shared.array((population_size, dimension), dtype="float")
 	positions[:] = np.copy(population) # np.random.uniform(0, 1, (population_size, dimension)) * (ub - lb) + lb
+	# labels_pred = np.zeros((population_size, len(points)))
 	labels_pred = pymp.shared.array((population_size, len(points)), dtype="float")
 
 	leader_labels = pymp.shared.array(len(points), dtype="float")
-	# ------------------------
-	
 	# Initialize convergence
 	convergence_curve = np.zeros(iterations)
 
 	sol = Solution()
 
-	print("MP_WOA is optimizing \"" + objective_function.__name__ + "\"")
+	print("P_MP_WOA is optimizing \"" + objective_function.__name__ + "\"")
 
 	timer_start = time.time()
 	sol.start_time = time.strftime("%Y-%m-%d-%H-%M-%S")
@@ -89,21 +86,21 @@ def PWOA(objective_function, lb, ub, dimension, population_size, iterations, num
 
 		# Update the Position of search agents
 		for i in range(population_size):
-			r1 = random.random() # r1 is a random number in [0,1]
-			r2 = random.random() # r2 is a random number in [0,1]
+			r1 = np.random.random() # r1 is a random number in [0,1]
+			r2 = np.random.random() # r2 is a random number in [0,1]
 
 			A = 2 * a * r1 - a # Eq. (2.3) in the paper
 			C = 2 * r2 # Eq. (2.4) in the paper
 
 			b = 1 # parameters in Eq. (2.5)
-			l = (a2 - 1) * random.random() + 1 # parameters in Eq. (2.5)
+			l = (a2 - 1) * np.random.random() + 1 # parameters in Eq. (2.5)
 
-			p = random.random() # p in Eq. (2.6)
+			p = np.random.random() # p in Eq. (2.6)
 
 			for j in range(dimension):
 				if p < 0.5:
 					if abs(A) >= 1:
-						rand_leader_index = math.floor(population_size * random.random())
+						rand_leader_index = np.floor(population_size * np.random.random()).astype(int)
 						X_rand = positions[rand_leader_index, :]
 						D_X_rand = abs(C * X_rand[j] - positions[i, j])
 						positions[i, j] = X_rand[j] - A * D_X_rand
@@ -113,7 +110,7 @@ def PWOA(objective_function, lb, ub, dimension, population_size, iterations, num
 				elif p >= 0.5:
 					distance2_leader = abs(leader_pos[j] - positions[i, j])
 					# Eq. (2.5)
-					positions[i, j] = distance2_leader * math.exp(b * l) * math.cos(l * 2 * math.pi) + leader_pos[j]
+					positions[i, j] = distance2_leader * np.exp(b * l) * np.cos(l * 2 * np.pi) + leader_pos[j]
 
 		convergence_curve[iteration] = leader_score[0]
 		iteration += 1
@@ -123,7 +120,7 @@ def PWOA(objective_function, lb, ub, dimension, population_size, iterations, num
 	sol.end_time = time.strftime("%Y-%m-%d-%H-%M-%S")
 	sol.runtime = timer_end - timer_start
 	sol.convergence = convergence_curve
-	sol.optimizer = "MP_WOA"
+	sol.optimizer = "P_MP_WOA"
 	sol.objf_name = objective_function.__name__
 	sol.dataset_name = dataset_name
 	sol.best = leader_score[0]

@@ -64,7 +64,7 @@ def GWO(objective_function, lb, ub, dimension, population_size, iterations, num_
 			if fitness < alpha_score:
 				delta_score = beta_score # Update delte
 				delta_pos = beta_pos.copy()
-				delta_labels = beta_labels.copy()
+				# delta_labels = beta_labels.copy()
 				beta_score = alpha_score # Update beta
 				beta_pos = alpha_pos.copy()
 				beta_labels = alpha_labels.copy()
@@ -75,7 +75,7 @@ def GWO(objective_function, lb, ub, dimension, population_size, iterations, num_
 			if (fitness > alpha_score and fitness < beta_score):
 				delta_score = beta_score # Update delte
 				delta_pos = beta_pos.copy()
-				delta_labels = beta_labels.copy()
+				# delta_labels = beta_labels.copy()
 				beta_score = fitness # Update beta
 				beta_pos = positions[i, :].copy()
 				beta_labels = labels_pred[i, :].copy()
@@ -83,7 +83,7 @@ def GWO(objective_function, lb, ub, dimension, population_size, iterations, num_
 			if (fitness > alpha_score and fitness > beta_score and fitness < delta_score):
 				delta_score = fitness # Update delta
 				delta_pos = positions[i, :].copy()
-				delta_labels = labels_pred[i, :].copy()
+				# delta_labels = labels_pred[i, :].copy()
 
 		a = 2 - k * (2 / iterations) # a decreases linearly fron 2 to 0
 

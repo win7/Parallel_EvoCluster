@@ -4,15 +4,13 @@ Created on Mon May 16 00:27:50 2016
 
 @author: Hossam Faris
 """
-from source.solution import Solution
+from utils.solution import Solution
 
 # ------- Parallel -------
 import pymp
 # ------------------------
-
 import numpy as np
 import time
-import random
 
 def PGWO(objective_function, lb, ub, dimension, population_size, iterations, num_clusters, points, metric, dataset_name, population, cores):
 	num_features = int(dimension / num_clusters)
@@ -23,34 +21,42 @@ def PGWO(objective_function, lb, ub, dimension, population_size, iterations, num
 	# population_size = 5 (SearchAVgents_no)
 
 	# Initialize alpha, beta, and delta_pos
-	# ------- Parallel -------
+	# alpha_score = float("inf")
 	alpha_score = pymp.shared.array(1, dtype="float")
 	alpha_score.fill(float("inf"))
+	# alpha_pos = np.zeros(dimension)
 	alpha_pos = pymp.shared.array(dimension, dtype="float")
+	# alpha_labels = np.zeros(dimension)
 	alpha_labels = pymp.shared.array(len(points), dtype="float") # OBS: before dimension
 
+	# beta_score = float("inf")
 	beta_score = pymp.shared.array(1, dtype="float")
 	beta_score.fill(float("inf"))
+	# beta_pos = np.zeros(dimension)
 	beta_pos = pymp.shared.array(dimension, dtype="float")
-	beta_labels = pymp.shared.array(len(points), dtype="float") # OBS: before dimension
+	# beta_labels = np.zeros(dimension)
+	beta_labels = pymp.shared.array(len(points), dtype="float") # OBS: beforedimension
 
+	# delta_score = float("inf")
 	delta_score = pymp.shared.array(1, dtype="float")
 	delta_score.fill(float("inf"))
+	# delta_pos = np.zeros(dimension)
 	delta_pos = pymp.shared.array(dimension, dtype="float")
+	# delta_labels = np.zeros(dimension)
 	delta_labels = pymp.shared.array(dimension, dtype="float")
 
 	# Initialize the positions of search agents
 	# positions = np.zeros((population_size, dimension))
 	positions = pymp.shared.array((population_size, dimension), dtype="float")
 	positions[:] = np.copy(population) # np.random.uniform(0, 1, (population_size, dimension)) * (ub - lb) + lb
+	# labels_pred = np.zeros((population_size, len(points)))
 	labels_pred = pymp.shared.array((population_size, len(points)), dtype="float")
-	# ------------------------
 
 	convergence_curve = np.zeros(iterations)
 	sol = Solution()
 
 	# Loop counter
-	print("MP_GWO is optimizing \"" + objective_function.__name__ + "\"")
+	print("P_MP_GWO is optimizing \"" + objective_function.__name__ + "\"")
 
 	timer_start = time.time()
 	sol.start_time = time.strftime("%Y-%m-%d-%H-%M-%S")
@@ -104,8 +110,8 @@ def PGWO(objective_function, lb, ub, dimension, population_size, iterations, num
 		# Update the Position of search agents including omegas
 		for i in range(population_size):
 			for j in range(dimension):
-				r1 = random.random() # r1 is a random number in [0,1]
-				r2 = random.random() # r2 is a random number in [0,1]
+				r1 = np.random.random() # r1 is a random number in [0,1]
+				r2 = np.random.random() # r2 is a random number in [0,1]
 
 				A1 = 2 * a * r1 - a # Equation (3.3)
 				C1 = 2 * r2 # Equation (3.4)
@@ -114,8 +120,8 @@ def PGWO(objective_function, lb, ub, dimension, population_size, iterations, num
 				D_alpha = abs(C1 * alpha_pos[j] - positions[i, j])
 				X1 = alpha_pos[j] - A1 * D_alpha # Equation (3.6)-part 1
 
-				r1 = random.random()
-				r2 = random.random()
+				r1 = np.random.random()
+				r2 = np.random.random()
 
 				A2 = 2 * a * r1 - a # Equation (3.3)
 				C2 = 2 * r2 # Equation (3.4)
@@ -124,8 +130,8 @@ def PGWO(objective_function, lb, ub, dimension, population_size, iterations, num
 				D_beta = abs(C2 * beta_pos[j] - positions[i, j])
 				X2 = beta_pos[j]-A2*D_beta # Equation (3.6)-part 2
 
-				r1 = random.random()
-				r2 = random.random()
+				r1 = np.random.random()
+				r2 = np.random.random()
 
 				A3 = 2 * a * r1 - a # Equation (3.3)
 				C3 = 2 * r2 # Equation (3.4)
@@ -143,7 +149,7 @@ def PGWO(objective_function, lb, ub, dimension, population_size, iterations, num
 	sol.end_time = time.strftime("%Y-%m-%d-%H-%M-%S")
 	sol.runtime = timer_end - timer_start
 	sol.convergence = convergence_curve
-	sol.optimizer = "MP_GWO"
+	sol.optimizer = "P_MP_GWO"
 	sol.objf_name = objective_function.__name__
 	sol.dataset_name = dataset_name
 	sol.labels_pred = np.array(alpha_labels, dtype=np.int64)

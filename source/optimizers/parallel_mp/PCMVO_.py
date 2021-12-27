@@ -5,12 +5,13 @@ Created on Wed May 11 17:06:34 2016
 @author: hossam
 """
 from sklearn.preprocessing import normalize
-from source.solution import Solution
+from utils.solution import Solution
 
+# ------- Parallel -------
+import pymp
+# ------------------------
 import numpy as np
-import math
 import time
-import random
 
 def normr(matrix):
 	""" 
@@ -25,7 +26,7 @@ def normr(matrix):
 
 	# if statement to enforce dtype float
 	# B = normalize(matrix,norm="l2",axis=1)
-	B = (matrix - min(matrix)) / (max(matrix) - min(matrix))
+	B = (matrix - np.min(matrix)) / (np.max(matrix) - np.min(matrix))
 	B = np.reshape(B, -1)
 	return B
 
@@ -38,7 +39,7 @@ def randk(t):
 
 def roulette_wheel_selection(weights):
 	accumulation = np.cumsum(weights)
-	p = random.random() * accumulation[-1]
+	p = np.random.random() * accumulation[-1]
 	chosen_index = -1
 	for index in range(len(accumulation)):
 		if (accumulation[index] > p):
@@ -47,7 +48,7 @@ def roulette_wheel_selection(weights):
 	choice = chosen_index
 	return choice
 
-def MVO(objective_function, lb, ub, dimension, population_size, iterations, num_clusters, points, metric, dataset_name, population):
+def PMVO(objective_function, lb, ub, dimension, population_size, iterations, num_clusters, points, metric, dataset_name, population, cores):
 	num_features = int(dimension / num_clusters)
 
 	# dimension = 30
@@ -59,24 +60,30 @@ def MVO(objective_function, lb, ub, dimension, population_size, iterations, num_
 	WEP_max = 1
 	WEP_min = 0.2
 
-	universes = np.copy(population) # np.random.uniform(0, 1, (population_size, dimension)) * (ub - lb) + lb
+	universes = pymp.shared.array((population_size, dimension), dtype="float")
+	universes[:] = np.copy(population) # np.random.uniform(0, 1, (population_size, dimension)) * (ub - lb) + lb
 
 	sorted_universes = np.copy(universes)
 
-	labels_pred = np.zeros((population_size, len(points)))
+	# labels_pred = np.zeros((population_size, len(points)))
+	labels_pred = pymp.shared.array((population_size, len(points)), dtype="float")
 	sorted_labels = np.copy(labels_pred)
 
 	convergence = np.zeros(iterations)
 
-	best_universe = [0] * dimension
-	best_universe_inflation_rate = float("inf")
-	labels_pred_best = np.zeros(len(points))
+	# best_universe = [0] * dimension
+	best_universe = pymp.shared.array(dimension, dtype="float")
+	# best_universe_inflation_rate = float("inf")
+	best_universe_inflation_rate = pymp.shared.array(1, dtype="float")
+	best_universe_inflation_rate.fill(float("inf"))
+	# labels_pred_best = np.zeros(len(points))
+	labels_pred_best = pymp.shared.array(len(points), dtype="float")
 
 	sol = Solution()
 
 	iteration = 1
 
-	print("MVO is optimizing \"" + objective_function.__name__ + "\"")
+	print("P_MP_MVO is optimizing \"" + objective_function.__name__ + "\"")
 
 	timer_start = time.time()
 	sol.start_time = time.strftime("%Y-%m-%d-%H-%M-%S")
@@ -84,26 +91,31 @@ def MVO(objective_function, lb, ub, dimension, population_size, iterations, num_
 		# Eq. (3.3) in the paper
 		WEP = WEP_min + iteration * ((WEP_max - WEP_min) / iterations)
 
-		TDR = 1 - (math.pow(iteration, 1 / 6) / math.pow(iterations, 1 / 6))
+		TDR = 1 - (np.power(iteration, 1 / 6) / np.power(iterations, 1 / 6))
 
-		inflation_rates = [0] * len(universes)
+		# inflation_rates = [0] * len(universes)
+		inflation_rates = pymp.shared.array(len(universes), dtype="float")
 
-		for k in range(population_size):
-			universes[k, :] = np.clip(universes[k, :], lb, ub)
+		# ------- Parallel -------
+		with pymp.Parallel(cores) as p:
+			for k in p.range(population_size):
+				universes[k, :] = np.clip(universes[k, :], lb, ub)
 
-			startpts = np.reshape(universes[k, :], (num_clusters, num_features))
-			if objective_function.__name__ in ["SSE", "SC", "DI"]:
-				fitness_value, labels_pred_values = objective_function(startpts, points, num_clusters, metric)
-			else:
-				fitness_value, labels_pred_values = objective_function(startpts, points, num_clusters)
-			
-			inflation_rates[k] = fitness_value
-			labels_pred[k, :] = labels_pred_values
+				startpts = np.reshape(universes[k, :], (num_clusters, num_features))
+				if objective_function.__name__ in ["SSE", "SC", "DI"]:
+					fitness_value, labels_pred_values = objective_function(startpts, points, num_clusters, metric)
+				else:
+					fitness_value, labels_pred_values = objective_function(startpts, points, num_clusters)
+				
+				inflation_rates[k] = fitness_value
+				labels_pred[k, :] = labels_pred_values
 
-			if inflation_rates[k] < best_universe_inflation_rate:
-				best_universe_inflation_rate = inflation_rates[k]
-				best_universe = np.array(universes[k, :])
-				labels_pred_best = np.array(labels_pred[k, :])
+				with p.lock:
+					if inflation_rates[k] < best_universe_inflation_rate[0]:
+						best_universe_inflation_rate[0] = inflation_rates[k]
+						best_universe[:] = np.array(universes[k, :])
+						labels_pred_best[:] = np.array(labels_pred[k, :])
+		# ------------------------
 
 		sorted_inflation_rates = np.sort(inflation_rates)
 		sorted_indexes = np.argsort(inflation_rates)
@@ -120,7 +132,7 @@ def MVO(objective_function, lb, ub, dimension, population_size, iterations, num_
 		for i in range(1, population_size):
 			back_hole_index = i
 			for j in range(dimension):
-				r1 = random.random()
+				r1 = np.random.random()
 				if r1 < normalized_sorted_Inflation_rates[i]:
 					white_hole_index = roulette_wheel_selection(-sorted_inflation_rates)
 
@@ -130,31 +142,31 @@ def MVO(objective_function, lb, ub, dimension, population_size, iterations, num_
 					universes[back_hole_index, j] = sorted_universes[white_hole_index, j]
 					labels_pred[back_hole_index, j] = sorted_labels[white_hole_index, j]
 
-				r2 = random.random()
+				r2 = np.random.random()
 
 				if r2 < WEP:
-					r3 = random.random()
+					r3 = np.random.random()
 					if r3 < 0.5:
 						# random.uniform(0, 1) + lb);
-						universes[i, j] = best_universe[j] + TDR * ((ub - lb) * random.random() + lb)
+						universes[i, j] = best_universe[j] + TDR * ((ub - lb) * np.random.random() + lb)
 					if r3 > 0.5:
 						# random.uniform(0, 1) + lb);
-						universes[i, j] = best_universe[j] - TDR * ((ub - lb) * random.random() + lb)
+						universes[i, j] = best_universe[j] - TDR * ((ub - lb) * np.random.random() + lb)
 
-		convergence[iteration - 1] = best_universe_inflation_rate
+		convergence[iteration - 1] = best_universe_inflation_rate[0]
 		iteration += 1
-		print(["At iteration " + str(iteration - 2) + " the best fitness is " + str(best_universe_inflation_rate)])
+		print(["At iteration " + str(iteration - 2) + " the best fitness is " + str(best_universe_inflation_rate[0])])
 
 	timer_end = time.time()
 	sol.end_time = time.strftime("%Y-%m-%d-%H-%M-%S")
 	sol.runtime = timer_end - timer_start
 	sol.convergence = convergence
-	sol.optimizer = "MVO"
+	sol.optimizer = "P_MP_MVO"
 	sol.objf_name = objective_function.__name__
 	sol.dataset_name = dataset_name
 	sol.best_individual = best_universe
 	sol.labels_pred = np.array(labels_pred_best, dtype=np.int64)
-	sol.fitness = best_universe_inflation_rate
+	sol.fitness = best_universe_inflation_rate[0]
 
 	sol.save()
 	# return sol

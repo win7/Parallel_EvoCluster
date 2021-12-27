@@ -4,13 +4,16 @@ Created on Mon May 16 10:42:18 2016
 
 @author: hossam
 """
-from utils.solution import Solution
+from source.solution import Solution
 
 # ------- Parallel -------
 import pymp
 # ------------------------
+
 import numpy as np
+import math
 import time
+import random
 
 def PMFO(objective_function, lb, ub, dimension, population_size, iterations, num_clusters, points, metric, dataset_name, population, cores):
 	num_features = int(dimension / num_clusters)
@@ -20,15 +23,15 @@ def PMFO(objective_function, lb, ub, dimension, population_size, iterations, num
 	# dimension = 30
 	# population_size = 50  # Number of search agents
 
+	# ------- Parallel -------
 	# Initialize the positions of moths
 	moth_pos = pymp.shared.array((population_size, dimension), dtype="float")
 	moth_pos[:] = population # np.random.uniform(0, 1, (population_size, dimension)) * (ub - lb) + lb
-	# moth_fitness = np.full(population_size, float("inf"))
 	moth_fitness = pymp.shared.array(population_size, dtype="float")
 	moth_fitness.fill(float("inf"))
-	# moth_labels = np.zeros((population_size, len(points)))
 	moth_labels = pymp.shared.array((population_size, len(points)), dtype="float")
 	# moth_fitness=np.fell(float("inf"))
+	# ------------------------
 
 	convergence_curve = np.zeros(iterations)
 
@@ -54,7 +57,7 @@ def PMFO(objective_function, lb, ub, dimension, population_size, iterations, num
 
 	sol = Solution()
 
-	print("P_M_MFO is optimizing \"" + objective_function.__name__ + "\"")
+	print("MP_MFO is optimizing \"" + objective_function.__name__ + "\"")
 
 	timer_start = time.time()
 	sol.start_time = time.strftime("%Y-%m-%d-%H-%M-%S")
@@ -103,7 +106,7 @@ def PMFO(objective_function, lb, ub, dimension, population_size, iterations, num
 			double_fitness_sorted = np.sort(double_fitness)
 			I2 = np.argsort(double_fitness)
 
-			for new_index in range(0, 2 * population_size):
+			for new_index in range(2 * population_size):
 				double_sorted_population[new_index, :] = np.array(double_population[I2[new_index], :])
 				double_sorted_labels[new_index, :] = np.array(double_labels[I2[new_index], :])
 
@@ -119,7 +122,7 @@ def PMFO(objective_function, lb, ub, dimension, population_size, iterations, num
 		# Update the position best flame obtained so far
 		best_flame_score = fitness_sorted[0]
 		best_flame_pos = sorted_population[0, :]
-		best_labelsPred = sorted_labels[0, :]
+		best_labels_pred = sorted_labels[0, :]
 
 		previous_population = moth_pos
 		previous_labels = moth_labels
@@ -135,19 +138,19 @@ def PMFO(objective_function, lb, ub, dimension, population_size, iterations, num
 					# D in Eq. (3.13)
 					distance_to_flame = abs(sorted_population[i, j] - moth_pos[i, j])
 					b = 1
-					t = (a - 1) * np.random.random() + 1
+					t = (a - 1) * random.random() + 1
 
 					# Eq. (3.12)
-					moth_pos[i, j] = distance_to_flame * np.exp(b * t) * np.cos(t * 2 * np.pi) + sorted_population[i, j]
+					moth_pos[i, j] = distance_to_flame * math.exp(b * t) * math.cos(t * 2 * math.pi) + sorted_population[i, j]
 
 				if i > flame_no: # Update the position of the moth with respct to one flame
 					# Eq. (3.13)
 					distance_to_flame = abs(sorted_population[i, j] - moth_pos[i, j])
 					b = 1
-					t = (a - 1) * np.random.random() + 1
+					t = (a - 1) * random.random() + 1
 					
 					# Eq. (3.12)
-					moth_pos[i, j] = distance_to_flame * np.exp(b * t) * np.cos(t * 2 * np.pi) + sorted_population[flame_no, j]
+					moth_pos[i, j] = distance_to_flame * math.exp(b * t) * math.cos(t * 2 * math.pi) + sorted_population[flame_no, j]
 
 		convergence_curve[iteration - 1] = best_flame_score # Obs: convergence_curve[iteration]
 		iteration += 1
@@ -158,11 +161,11 @@ def PMFO(objective_function, lb, ub, dimension, population_size, iterations, num
 	sol.end_time = time.strftime("%Y-%m-%d-%H-%M-%S")
 	sol.runtime = timer_end - timer_start
 	sol.convergence = convergence_curve
-	sol.optimizer = "P_MP_MFO"
+	sol.optimizer = "MP_MFO"
 	sol.objf_name = objective_function.__name__
 	sol.dataset_name = dataset_name
 	sol.best_individual = best_flame_pos
-	sol.labels_pred = np.array(best_labelsPred, dtype=np.int64)
+	sol.labels_pred = np.array(best_labels_pred, dtype=np.int64)
 	sol.fitness = best_flame_score
 
 	sol.save()
