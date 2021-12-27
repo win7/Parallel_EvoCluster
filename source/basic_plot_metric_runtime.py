@@ -11,7 +11,7 @@ index_datasets = [0, 3, 6, 7, 8] # [0, 3, 6, 7, 8] # Change
 values = "metric" # Change metric, runtime
 
 title = "Runtime "
-ylabel = "Runtime (ms)"
+ylabel = "Runtime (s)"
 
 labels = [] # Dataset label
 for index in index_datasets:
