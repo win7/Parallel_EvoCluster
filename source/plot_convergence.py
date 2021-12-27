@@ -22,9 +22,9 @@ def run(results_directory, optimizer, objective_function, dataset_list, iteratio
 			for k in range(len(optimizer)):
 				optimizer_name = optimizer[k]
 				
-				if "P_MPI_" == optimizer_name[:6]:
+				if "MPI_" == optimizer_name[:4]:
 					line_style = "dashed"
-				elif "P_MP_" == optimizer_name[:5]:
+				elif "MP_" == optimizer_name[:3]:
 					line_style = "dotted"
 				else:
 					line_style = "solid"
@@ -51,8 +51,9 @@ def run(results_directory, optimizer, objective_function, dataset_list, iteratio
 if __name__ == "__main__":
 	results_directory = "2021-05-20_23:35:35"
 	optimizer = ["SSA", "PSO", "GA", "BAT", "FFA", "GWO", "WOA", "MVO", "MFO", "CS", 
-				"P_MPI_SSA", "P_MPI_PSO", "P_MPI_GA", "P_MPI_BAT", "P_MPI_FFA", "P_MPI_GWO", "P_MPI_WOA", "P_MPI_MVO", "P_MPI_MFO", "P_MPI_CS",
-				"P_MP_SSA", "P_MP_PSO", "P_MP_GA", "P_MP_BAT", "P_MP_FFA", "P_MP_GWO", "P_MP_WOA", "P_MP_MVO", "P_MP_MFO", "P_MP_CS"]
+				"MPI_SSA", "MPI_PSO", "MPI_GA", "MPI_BAT", "MPI_FFA", "MPI_GWO", "MPI_WOA", "MPI_MVO", "MPI_MFO", "MPI_CS",
+				"MP_SSA", "MP_PSO", "MP_GA", "MP_BAT", "MP_FFA", "MP_GWO", "MP_WOA", "MP_MVO", "MP_MFO", "MP_CS"]
+
 	objective_function = ["SSE"]
 	dataset_list = ["iris", "wine"]
 	iterations = 100
