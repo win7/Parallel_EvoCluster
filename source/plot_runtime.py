@@ -20,7 +20,7 @@ def run(results_directory, optimizer, objective_function, dataset_list, iteratio
 			# annotate
 			ax.bar_label(ax.containers[0], label_type="edge", rotation=0)
 			ax.set_xlabel("Runtime (s)")
-			plt.suptitle("Runtime Graph - Dataset: {}".format(dataset_list[i]))
+			plt.suptitle("Runtime: {} dataset".format(dataset_list[i]))
 			plt.xticks(rotation=0)
 			plt.legend(loc="upper right")
 			plt.grid()

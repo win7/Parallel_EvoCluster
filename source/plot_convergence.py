@@ -37,7 +37,7 @@ def run(results_directory, optimizer, objective_function, dataset_list, iteratio
 				plt.plot(all_generations, row.values.tolist()[0], label=optimizer_name, linestyle=line_style, linewidth=1.5, marker="")
 
 			fig_name = results_directory + "/convergence-" + dataset_list[i] + "-" + objective_name + ".png"
-			plt.suptitle("Convergence Graph - Dataset: {}".format(dataset_list[i]))
+			plt.suptitle("Convergence: {} dataset".format(dataset_list[i]))
 			plt.xlabel("Iterations")
 			plt.ylabel("Fitness")
 			# plt.legend(loc="upper right", bbox_to_anchor=(1.2, 1.02))
