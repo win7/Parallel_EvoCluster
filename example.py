@@ -16,20 +16,21 @@ if __name__ == "__main__":
 	# Select objective function
 	# "SSE", "TWCV", "SC", "DB", "DI"
 	objective_function = ["SSE"] # , "TWCV", "SC", "DB", "DI"]
+	objective_function=["SSE","TWCV"] 
 
 	# Select data sets
 	# "aggregation", "aniso", "appendicitis", "balance", "banknote", "blobs", "Blood", "circles", "diagnosis_II", "ecoli", "flame","glass", "heart", "ionosphere", "iris", 
 	# "iris2D", "jain", "liver", "moons", "mouse", "pathbased", "seeds", "smiley", "sonar", "varied", "vary-density", "vertebral2", "vertebral3", "wdbc", "wine"
 	dataset_list = ["aggregation", "aniso", "appendicitis", "balance", "banknote", "blobs", "Blood", "circles", "diagnosis_II", "ecoli", "flame", "glass", "heart", "ionosphere",
 					"iris", "iris2D", "jain", "liver", "moons", "mouse", "pathbased", "seeds", "smiley", "sonar", "varied", "vary-density", "vertebral2", "vertebral3", "wdbc", "wine"]
-	dataset_list = ["iris"]
+	dataset_list = ["iris","aggregation"]
 
 	# Select number of repetitions for each experiment.
 	# To obtain meaningful statistical results, usually 30 independent runs are executed for each algorithm.
-	num_runs = 1
+	num_runs = 2
 
 	# Select general parameters for all optimizers (population size, number of iterations, number of cores for MP)
-	params = {"population_size": cores * 10, "iterations": 20, "cores": 4}
+	params = {"population_size": cores * 10, "iterations": 50, "cores": 4}
 
 	# Choose whether to Export the results in different formats
 	export_flags = {
@@ -73,7 +74,8 @@ if __name__ == "__main__":
 		"interval_emi_imm": interval_emi_imm[params_policy[index_policy][5]]
 	}
 
-	run(optimizer, objective_function, dataset_list, num_runs, params, export_flags, policy)
+	# run(optimizer, objective_function, dataset_list, num_runs, params, export_flags, policy)
+	run(optimizer, objective_function, dataset_list, num_runs, params, export_flags, policity, auto_cluster=False, num_clusters=[3, 7], labels_exist=True, metric="euclidean")
 
 # Run:
 # python example.py
