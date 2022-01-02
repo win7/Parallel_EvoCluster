@@ -75,7 +75,7 @@ if __name__ == "__main__":
 	}
 
 	# run(optimizer, objective_function, dataset_list, num_runs, params, export_flags, policy)
-	run(optimizer, objective_function, dataset_list, num_runs, params, export_flags, policity, auto_cluster=False, num_clusters=[3, 7], labels_exist=True, metric="euclidean")
+	run(optimizer, objective_function, dataset_list, num_runs, params, export_flags, policy, auto_cluster=False, num_clusters=[3, 7], labels_exist=True, metric="euclidean")
 
 # Run:
 # python example.py
