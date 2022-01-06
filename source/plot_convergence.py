@@ -4,7 +4,7 @@ import pandas as pd
 
 def run(results_directory, optimizer, objective_function, dataset_list, iterations, show=False):
 	plt.ioff()
-	file_results_data = pd.read_csv(results_directory + "/experiment.csv")
+	file_results_data = pd.read_csv(results_directory + "/experiment_avg.csv")
 	
 	# Set values for colors
 	# colormap = plt.cm.gist_ncar

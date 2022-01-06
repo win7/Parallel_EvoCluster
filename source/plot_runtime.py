@@ -4,7 +4,7 @@ import pandas as pd
 
 def run(results_directory, optimizer, objective_function, dataset_list, iterations, show=False):
 	plt.ioff()
-	file_results_data = pd.read_csv(results_directory + "/experiment.csv")
+	file_results_data = pd.read_csv(results_directory + "/experiment_avg.csv")
 	
 	for i in range(len(dataset_list)):
 		for j in range (len(objective_function)):

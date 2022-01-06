@@ -31,17 +31,19 @@ def package(population, dimension, migration_index, policy, order_portion):
 			end_portion = start_portion + policy["number_emi_imm"]
 			for k in range(start_portion, end_portion):
 				index = np.random.randint(length)
-				data.append(population[index])
+				# data = np.append(data, population[index])
+				data[k] = population[index]
 				migration_index[k] = index
 		else: # CLONE
 			for k in range(policy["number_emi_imm"]):
 				index = np.random.randint(length)
-				data.append(population[index])
+				# data = np.append(data, population[index])
+				data[k] = population[index]
 	return data
 
 def unpack(population, migration_index, policy, order_portion, data):
 	length = len(population)
-
+	
 	if policy["choice_imm"] == "BEST":
 		if policy["emigration"] == "REMOVE":
 			start_portion = order_portion * policy["number_emi_imm"]
@@ -64,15 +66,15 @@ def unpack(population, migration_index, policy, order_portion, data):
 		if policy["emigration"] == "REMOVE":
 			start_portion = order_portion * policy["number_emi_imm"]
 			end_portion = start_portion + policy["number_emi_imm"]
-			for k, index in enumerate(migration_index[start_portion, end_portion]):
+			for k, index in enumerate(migration_index[start_portion: end_portion]):
 				population[index] = data[k]
 		else: # REPLACE
 			for k in range(policy["number_emi_imm"]):
-				index = np.random.randint(0, length)
+				index = np.random.randint(length)
 				population[index] = data[k]
 
 def ring(comm, population, dimension, migration_index, policy, rank, size):
-	data_r = np.empty((policy["number_emi_imm"], dimension), dtype=float)
+	data_r = np.zeros((policy["number_emi_imm"], dimension), dtype=float)
 
 	data_s = package(population, dimension, migration_index, policy, 0)
 	comm.Send([data_s, MPI.FLOAT], dest=(rank + 1) % size)
@@ -87,7 +89,7 @@ def ring(comm, population, dimension, migration_index, policy, rank, size):
 	unpack(population, migration_index, policy, 0, data) """
 
 def tree(comm, population, dimension, migration_index, policy, rank, size):
-	data_r = np.empty((policy["number_emi_imm"], dimension), dtype=float)
+	data_r = np.zeros((policy["number_emi_imm"], dimension), dtype=float)
 	if rank == 0:
 		data_s = package(population, dimension, migration_index, policy, 0)
 		comm.Send([data_s, MPI.FLOAT], dest=(2 * rank) + 1)
@@ -130,7 +132,7 @@ def tree(comm, population, dimension, migration_index, policy, rank, size):
 		unpack(population, migration_index, policy, 0, data_r)
 
 def net_a(comm, population, dimension, migration_index, policy, rank, size):
-	data_r = np.empty((policy["number_emi_imm"], dimension), dtype=float)
+	data_r = np.zeros((policy["number_emi_imm"], dimension), dtype=float)
 	if rank == 1 or rank == 2:
 		data_s = package(population, dimension, migration_index, policy, 0)
 		comm.Send([data_s, MPI.FLOAT], dest=(rank - 1 + 24) % size)
@@ -207,7 +209,7 @@ def net_a(comm, population, dimension, migration_index, policy, rank, size):
 		unpack(population, migration_index, policy, 3, data_r)
 
 def net_b(comm, population, dimension, migration_index, policy, rank, size):
-	data_r = np.empty((policy["number_emi_imm"], dimension), dtype=float)
+	data_r = np.zeros((policy["number_emi_imm"], dimension), dtype=float)
 	if rank == 1 or rank == 2:
 		data_s = package(population, dimension, migration_index, policy, 0)
 		comm.Send([data_s, MPI.FLOAT], dest=(rank - 1 + 24) % size)
@@ -284,7 +286,7 @@ def net_b(comm, population, dimension, migration_index, policy, rank, size):
 		unpack(population, migration_index, policy, 2, data_r)
 
 def torus(comm, population, dimension, migration_index, policy, rank, size):
-	data_r = np.empty((policy["number_emi_imm"], dimension), dtype=float)
+	data_r = np.zeros((policy["number_emi_imm"], dimension), dtype=float)
 	if rank % 4 == 0:
 		data_s = package(population, dimension, migration_index, policy, 0)
 		comm.Send([data_s, MPI.FLOAT], dest=(rank - 4 + 24) % 24)
@@ -341,7 +343,7 @@ def torus(comm, population, dimension, migration_index, policy, rank, size):
 		unpack(population, migration_index, policy, 3, data_r)
 
 def graph(comm, population, dimension, migration_index, policy, rank, size):
-	data_r = np.empty((policy["number_emi_imm"], dimension), dtype=float)
+	data_r = np.zeros((policy["number_emi_imm"], dimension), dtype=float)
 	# Ayuda a ver que porcion del arreglo de fitness (ordenado) se empaquetara para enviar, segun en number_emi_imm
 	order_portion = 0
 

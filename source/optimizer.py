@@ -105,7 +105,7 @@ def run(optimizer, objective_function, dataset_list, num_runs, params, export_fl
 		if min(num_clusters) < 2:
 			print("num_clusters value should be larger than 2")
 			sys.exit()
-		if auto_cluster == True:
+		if auto_cluster:
 			print("num_clusters should be string if auto_cluster is true")
 			sys.exit()
 	else:
@@ -119,23 +119,25 @@ def run(optimizer, objective_function, dataset_list, num_runs, params, export_fl
 	cores = params["cores"]
 
 	# Export results ?
-	export = export_flags["export_avg"]
+	export_avg = export_flags["export_avg"]
 	export_details = export_flags["export_details"]
 	export_details_labels = export_flags["export_details_labels"]
+	export_best_params = export_flags["export_best_params"]
 	export_convergence = export_flags["export_convergence"]
 	export_boxplot = export_flags["export_boxplot"]
 	export_runtime = export_flags["export_runtime"]
 
 	# Check if it works at least once
-	flag = False
+	flag_avg = False
 	flag_details = False
 	flag_details_Labels = False
+	flag_best_params = False
 
 	# CSV Header for for the cinvergence
 	CnvgHeader = []
 
 	if labels_exist:
-		datasets_directory = "../datasets/"  # the directory where the dataset is stored
+		datasets_directory = "../datasets/supervised/"  # the directory where the dataset is stored
 	else:
 		# the directory where the dataset is stored
 		datasets_directory = "../datasets/unsupervised/"
@@ -276,10 +278,6 @@ def run(optimizer, objective_function, dataset_list, num_runs, params, export_fl
 							# prog = subprocess.Popen('mpirun -np 24 --oversubscribe python selector.py', stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 							os.system("mpirun -np 24 --oversubscribe python selector.py")
 							# result = os.system("mpiexec -n 24 python selector.py")
-
-							""" prog.communicate()  # Returns (stdoutdata, stderrdata): stdout and stderr are ignored, here
-							if prog.returncode:
-								raise Exception('program returned error code {0}'.format(prog.returncode)) """
 						elif "MP_" == optimizer[i][:3]:
 							print("Parallel MP version")
 							os.system("python selector.py")
@@ -296,7 +294,7 @@ def run(optimizer, objective_function, dataset_list, num_runs, params, export_fl
 							# result = subprocess.run(["python", "sources/selector.py"])
 					# ---------------------
 					sol = Solution().get("{}_{}_{}".format(optimizer[i], objective_name, dataset_list[h]))
-
+					
 					if labels_exist:
 						HS[z] = measures.HS(labels_true[h], sol.labels_pred)
 						CS[z] = measures.CS(labels_true[h], sol.labels_pred)
@@ -321,7 +319,7 @@ def run(optimizer, objective_function, dataset_list, num_runs, params, export_fl
 					optimizerName = sol.optimizer
 					objf_name = sol.objf_name
 
-					if(export_details_labels == True):
+					if(export_details_labels):
 						export_to_file_details_labels = results_directory + "experiment_details_labels.csv"
 						with open(export_to_file_details_labels, "a", newline="\n") as out_details_labels:
 							writer_details = csv.writer(
@@ -337,7 +335,7 @@ def run(optimizer, objective_function, dataset_list, num_runs, params, export_fl
 							writer_details.writerow(a)
 						out_details_labels.close()
 
-					if(export_details == True):
+					if(export_details):
 						export_to_file_details = results_directory + "experiment_details.csv"
 						with open(export_to_file_details, "a", newline="\n") as out_details:
 							writer_details = csv.writer(out_details, delimiter=",")
@@ -360,13 +358,13 @@ def run(optimizer, objective_function, dataset_list, num_runs, params, export_fl
 
 							writer_details.writerow(a)
 						out_details.close()
-
-				if(export == True):
-					export_to_file = results_directory + "experiment.csv"
+				
+				if(export_avg):
+					export_to_file = results_directory + "experiment_avg.csv"
 
 					with open(export_to_file, "a", newline="\n") as out:
 						writer = csv.writer(out, delimiter=",")
-						if (flag == False):  # just one time to write the header of the CSV file
+						if (flag_avg == False):  # just one time to write the header of the CSV file
 							if labels_exist:
 								header = np.concatenate([["Dataset", "Optimizer", "Topology", "ObjfName", "k", "ExecutionTime", "SSE", "Purity", "Entropy",
 															 "HS", "CS", "VM", "AMI", "ARI", "Fmeasure", "TWCV", "SC", "Accuracy", "DI", "DB", "STDev"], CnvgHeader])
@@ -374,9 +372,9 @@ def run(optimizer, objective_function, dataset_list, num_runs, params, export_fl
 								header = np.concatenate(
 									[["Dataset", "Optimizer", "Topology", "ObjfName", "k", "ExecutionTime", "SSE", "TWCV", "SC", "DI", "DB", "STDev"], CnvgHeader])
 							writer.writerow(header)
-							flag = True  # at least one experiment
+							flag_avg = True  # at least one experiment
 
-						avgSSE = str(float("%0.2f" % (sum(exSSE) / num_runs)))
+						avgSSE = str(float("%0.2f" % (sum(exSSE) / num_runs))) # Important for find best parameters for Parallel_MPI
 						avgTWCV = str(float("%0.2f" % (sum(exTWCV) / num_runs)))
 						avgPurity = str(float("%0.2f" % (sum(purity) / num_runs)))
 						avgEntropy = str(float("%0.2f" % (sum(entropy) / num_runs)))
@@ -391,7 +389,7 @@ def run(optimizer, objective_function, dataset_list, num_runs, params, export_fl
 						avgDI = str(float("%0.2f" % (sum(DI) / num_runs)))
 						avgDB = str(float("%0.2f" % (sum(DB) / num_runs)))
 						avgStdev = str(float("%0.2f" % (sum(stdev) / num_runs)))
-						#avgAgg = str(float("%0.2f"%(np.sum(Agg) / num_runs)))
+						# avgAgg = str(float("%0.2f"%(np.sum(Agg) / num_runs)))
 
 						avgExecutionTime = float("%0.2f" % (sum(runtime) / num_runs))
 						avgConvergence = np.around(np.mean(convergence, axis=0, dtype=np.float64), decimals=2).tolist()
@@ -404,10 +402,31 @@ def run(optimizer, objective_function, dataset_list, num_runs, params, export_fl
 						writer.writerow(a)
 					out.close()
 
-	if export_convergence == True:
+				if(export_best_params):
+					export_to_file = results_directory + "experiment_best_params.csv"
+
+					with open(export_to_file, "a", newline="\n") as out:
+						writer = csv.writer(out, delimiter=",")
+						if (flag_best_params == False):  # just one time to write the header of the CSV file
+							header = np.concatenate(
+									[["Dataset", "Optimizer", "Topology", "Emigration", "ChoiceEmi", "ChoiceImm", "NumberEmiImm", "IntervalEmiImm",
+									 "ObjfName", "k", "ExecutionTime", "SSE"]])
+							writer.writerow(header)
+							flag_best_params = True  # at least one experiment
+
+						avgSSE = str(float("%0.2f" % (sum(exSSE) / num_runs))) # Important for find best parameters for Parallel_MPI
+						avgExecutionTime = float("%0.2f" % (sum(runtime) / num_runs))
+
+						a = np.concatenate([[dataset_list[h], optimizerName, sol.policy["topology"], sol.policy["emigration"], sol.policy["choice_emi"],
+											sol.policy["choice_imm"], sol.policy["number_emi_imm"], sol.policy["interval_emi_imm"], objf_name, k[h],
+											avgExecutionTime, avgSSE]])
+						writer.writerow(a)
+					out.close()
+
+	if export_convergence:
 		convergence_plot.run(results_directory, optimizer, objective_function, dataset_list, iterations)
 
-	if export_boxplot == True:
+	if export_boxplot:
 		if labels_exist:
 			ev_measures = ["SSE", "Purity", "Entropy", "HS", "CS", "VM", "AMI",
 						   "ARI", "Fmeasure", "TWCV", "SC", "Accuracy", "DI", "DB", "STDev"]
@@ -415,7 +434,7 @@ def run(optimizer, objective_function, dataset_list, num_runs, params, export_fl
 			ev_measures = ["SSE", "TWCV", "SC", "DI", "DB", "STDev"]
 		box_plot.run(results_directory, optimizer, objective_function, dataset_list, ev_measures, iterations)
 
-	if export_runtime == True:
+	if export_runtime:
 		runtime_plot.run(results_directory, optimizer, objective_function, dataset_list, iterations)
 
 	print("Execution completed")

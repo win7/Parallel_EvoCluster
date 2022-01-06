@@ -12,37 +12,33 @@ if __name__ == "__main__":
 	optimizer = ["SSA", "PSO", "GA", "BAT", "FFA", "GWO", "WOA", "MVO", "MFO", "CS", 
 				"MPI_SSA", "MPI_PSO", "MPI_GA", "MPI_BAT", "MPI_FFA", "MPI_GWO", "MPI_WOA", "MPI_MVO", "MPI_MFO", "MPI_CS",
 				"MP_SSA", "MP_PSO", "MP_GA", "MP_BAT", "MP_FFA", "MP_GWO", "MP_WOA", "MP_MVO", "MP_MFO", "MP_CS"]
+	optimizer = ["MPI_SSA", "MPI_PSO", "MPI_GA", "MPI_BAT", "MPI_FFA", "MPI_GWO", "MPI_WOA", "MPI_MVO", "MPI_MFO", "MPI_CS"]
 
 	# Select objective function
 	# "SSE", "TWCV", "SC", "DB", "DI"
 	objective_function = ["SSE", "TWCV", "SC", "DB", "DI"]
-	objective_function=["SSE","TWCV"] 
+	objective_function=["SSE"] 
 
 	# Select data sets
 	# "aggregation", "aniso", "appendicitis", "balance", "banknote", "blobs", "blood", "circles", "diagnosis_II", "ecoli", "flame","glass", "heart", "ionosphere", "iris", 
 	# "iris2D", "jain", "liver", "moons", "mouse", "pathbased", "seeds", "smiley", "sonar", "varied", "vary-density", "vertebral2", "vertebral3", "wdbc", "wine"
 	dataset_list = ["aggregation", "aniso", "appendicitis", "balance", "banknote", "blobs", "blood", "circles", "diagnosis_II", "ecoli", "flame", "glass", "heart", "ionosphere",
 					"iris", "iris2D", "jain", "liver", "moons", "mouse", "pathbased", "seeds", "smiley", "sonar", "varied", "vary-density", "vertebral2", "vertebral3", "wdbc", "wine"]
-	dataset_list = ["iris","aggregation"]
-
-	# Select cluster numbers for dataset
-	clusters = [7, 3, 2, 3, 2, 3, 2, 2, 2, 5, 2, 6, 2, 3, 3, 2, 2, 2, 2, 3, 3, 3, 4, 2, 3, 3, 2, 3, 2, 3]
-
-	# Select index for dataset and clusters numbers
-	
+	dataset_list = ["iris"]
 
 	# Select number of repetitions for each experiment.
 	# To obtain meaningful statistical results, usually 30 independent runs are executed for each algorithm.
-	num_runs = 2
+	num_runs = 1
 
 	# Select general parameters for all optimizers (population size, number of iterations, number of cores for MP)
-	params = {"population_size": cores * 10, "iterations": 50, "cores": 4}
+	params = {"population_size": cores * 10, "iterations": 10, "cores": 4}
 
 	# Choose whether to Export the results in different formats
 	export_flags = {
 		"export_avg": True,
 		"export_details": True,
 		"export_details_labels": True,
+		"export_best_params": False,
 		"export_convergence": True,
 		"export_boxplot": False,
 		"export_runtime": True
@@ -81,7 +77,8 @@ if __name__ == "__main__":
 	}
 
 	# run(optimizer, objective_function, dataset_list, num_runs, params, export_flags, policy)
-	run(optimizer, objective_function, dataset_list, num_runs, params, export_flags, policy, auto_cluster=False, num_clusters=[3, 7], labels_exist=True, metric="euclidean")
+	run(optimizer, objective_function, dataset_list, num_runs, params, export_flags, policy, 
+		auto_cluster=False, num_clusters=[3], labels_exist=True, metric="euclidean")
 
 # Run:
 # python example.py
