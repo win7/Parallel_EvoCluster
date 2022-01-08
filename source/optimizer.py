@@ -24,7 +24,7 @@ import subprocess
 import time
 import warnings
 
-warnings.simplefilter(action="ignore")
+# warnings.simplefilter(action="ignore")
 
 def run(optimizer, objective_function, dataset_list, num_runs, params, export_flags, policy, auto_cluster=True, num_clusters="supervised", labels_exist=True, metric="euclidean"):
 	"""

@@ -87,7 +87,7 @@ def DI(points, labels_pred):  # dunn index
 	fitness = 1 - dunn
 	return fitness
 
-def DB(points, labels_pred):
+def DB(points, labels_pred): 
 	return float("%0.2f" % metrics.davies_bouldin_score(points, labels_pred))
 	
 def stdev(individual, labels_pred, num_clusters, points):

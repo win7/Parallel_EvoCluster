@@ -29,11 +29,11 @@ def package(population, dimension, migration_index, policy, order_portion):
 		if policy["emigration"] == "REMOVE":
 			start_portion = order_portion * policy["number_emi_imm"]
 			end_portion = start_portion + policy["number_emi_imm"]
-			for k in range(start_portion, end_portion):
+			for i, j in enumerate(range(start_portion, end_portion)):
 				index = np.random.randint(length)
 				# data = np.append(data, population[index])
-				data[k] = population[index]
-				migration_index[k] = index
+				data[i] = population[index]
+				migration_index[j] = index
 		else: # CLONE
 			for k in range(policy["number_emi_imm"]):
 				index = np.random.randint(length)
