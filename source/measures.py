@@ -91,7 +91,7 @@ def DB(points, labels_pred):
 	try:
 		return float("%0.2f" % metrics.davies_bouldin_score(points, labels_pred))
 	except Exception as e:
-		return 0.5
+		return 0.9
 	
 def stdev(individual, labels_pred, num_clusters, points):
 	std = 0

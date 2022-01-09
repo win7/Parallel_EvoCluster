@@ -171,14 +171,13 @@ if __name__ == "__main__":
 	seeds = [169735477, 160028434, 160897947, 157407246, 153881302,
 				172694171, 171070236, 154302761, 165786948, 159504387]
 	p = Params().get()
-	# np.random.seed(seeds[p.iteration])
-	np.random.seed(123123123)
+	np.random.seed(seeds[p.iteration])
+
 	# Generate population
 	lb = 0
 	ub = 1
 	dimension = p.num_clusters * p.num_features # Number of dimensions
 	population = np.random.uniform(0, 1, (p.population_size, dimension)) * (ub - lb) + lb
-	# print(population[:5])
 
 	selector(p.algorithm, p.objective_name, p.num_clusters, p.num_features, p.population_size,
 				p.iterations, p.points, p.metric, p.dataset_name, p.policy, population, p.cores)
