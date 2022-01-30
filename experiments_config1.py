@@ -78,4 +78,4 @@ if __name__ == "__main__":
 						auto_cluster=False, num_clusters=list(clusters[index]), labels_exist=True, metric="euclidean")
 
 # Run:
-# python experiments.py
+# python experiments_config1.py

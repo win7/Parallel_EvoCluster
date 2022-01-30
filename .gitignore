@@ -1,4 +1,5 @@
 results/
+results_config1/
 temp/
 
 *.pyc 
