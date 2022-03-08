@@ -32,7 +32,7 @@ if __name__ == "__main__":
 	clusters = np.array([7, 3, 2, 3, 2, 3, 2, 2, 2, 5, 2, 6, 2, 3, 3, 2, 2, 2, 2, 3, 3, 3, 4, 2, 3, 3, 2, 3, 2, 3])
 
 	# Select index for dataset and clusters numbers
-	index = [6, 10, 20, 22, 25]
+	index = [3, 6, 20, 22, 25, 29]
 
 	# Select number of repetitions for each experiment.
 	# To obtain meaningful statistical results, usually 30 independent runs are executed for each algorithm.

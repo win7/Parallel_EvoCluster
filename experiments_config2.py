@@ -14,7 +14,7 @@ if __name__ == "__main__":
 	optimizer = ["SSA", "PSO", "GA", "BAT", "FFA", "GWO", "WOA", "MVO", "MFO", "CS", 
 				"MPI_SSA", "MPI_PSO", "MPI_GA", "MPI_BAT", "MPI_FFA", "MPI_GWO", "MPI_WOA", "MPI_MVO", "MPI_MFO", "MPI_CS",
 				"MP_SSA", "MP_PSO", "MP_GA", "MP_BAT", "MP_FFA", "MP_GWO", "MP_WOA", "MP_MVO", "MP_MFO", "MP_CS"]
-	optimizer = ["MPI_SSA"]#, "MPI_PSO", "MPI_GA", "MPI_BAT", "MPI_FFA", "MPI_GWO", "MPI_WOA", "MPI_MVO", "MPI_MFO", "MPI_CS"]
+	optimizer = ["MPI_SSA", "MPI_PSO", "MPI_GA", "MPI_BAT", "MPI_FFA", "MPI_GWO", "MPI_WOA", "MPI_MVO", "MPI_MFO", "MPI_CS"]
 
 	# Select objective function
 	# "SSE", "TWCV", "SC", "DB", "DI"
@@ -32,11 +32,11 @@ if __name__ == "__main__":
 	clusters = np.array([7, 3, 2, 3, 2, 3, 2, 2, 2, 5, 2, 6, 2, 3, 3, 2, 2, 2, 2, 3, 3, 3, 4, 2, 3, 3, 2, 3, 2, 3])
 
 	# Select index for dataset and clusters numbers
-	index = [6, 10, 20, 22, 25]
+	index = [3, 6, 20, 22, 25, 29]
 
 	# Select number of repetitions for each experiment.
 	# To obtain meaningful statistical results, usually 30 independent runs are executed for each algorithm.
-	num_runs = 1
+	num_runs = 5
 
 	# Select general parameters for all optimizers (population size, number of iterations, number of cores for MP)
 	params = {"population_size": cores * 30, "iterations": 100, "cores": cores}
@@ -63,24 +63,24 @@ if __name__ == "__main__":
 	params_policy = [
 		# MPI_SSA
 		[
-			[0, 0, 0], # RING: 0
-			[0, 1, 0], # TREE: 1
-			[0, 0, 0], # NETA: 2
-			[0, 0, 0], # NETB: 3
-			[0, 0, 0], # TORUS: 4
-			[0, 1, 1], # GRAPH: 5
-			[0, 2, 2], # SAME: 6
+			[0, 1, 0], # RING: 0
+			[0, 0, 1], # TREE: 1
+			[0, 1, 0], # NETA: 2
+			[0, 1, 0], # NETB: 3
+			[0, 1, 1], # TORUS: 4
+			[0, 0, 2], # GRAPH: 5
+			[0, 2, 0], # SAME: 6
 			[1, 2, 1], # GOODBAD: 7
-			[0, 0, 1]  # RAND: 8
+			[1, 1, 1]  # RAND: 8
 		],
 		# MPI_PSO
 		[
-			[1, 2, 1], # RING: 0
+			[1, 2, 0], # RING: 0
 			[0, 2, 1], # TREE: 1
-			[0, 2, 1], # NETA: 2
+			[0, 1, 0], # NETA: 2
 			[0, 1, 1], # NETB: 3
-			[0, 0, 1], # TORUS: 4
-			[1, 2, 1], # GRAPH: 5
+			[0, 1, 0], # TORUS: 4
+			[0, 2, 0], # GRAPH: 5
 			[1, 2, 0], # SAME: 6
 			[1, 2, 0], # GOODBAD: 7
 			[0, 2, 0]  # RAND: 8
@@ -88,98 +88,98 @@ if __name__ == "__main__":
 		# MPI_GA
 		[
 			[0, 0, 0], # RING: 0
-			[0, 0, 2], # TREE: 1
-			[0, 1, 0], # NETA: 2
+			[0, 0, 1], # TREE: 1
+			[0, 0, 0], # NETA: 2
 			[0, 1, 0], # NETB: 3
-			[0, 1, 2], # TORUS: 4
+			[0, 1, 1], # TORUS: 4
 			[0, 1, 2], # GRAPH: 5
 			[0, 0, 2], # SAME: 6
-			[0, 2, 1], # GOODBAD: 7
-			[1, 2, 0]  # RAND: 8
+			[1, 2, 1], # GOODBAD: 7
+			[0, 0, 0]  # RAND: 8
 		],
 		# MPI_BAT
 		[
 			[0, 0, 1], # RING: 0
-			[0, 0, 1], # TREE: 1
-			[0, 1, 1], # NETA: 2
-			[1, 2, 1], # NETB: 3
-			[0, 2, 2], # TORUS: 4
-			[1, 1, 0], # GRAPH: 5
-			[0, 2, 1], # SAME: 6
-			[1, 1, 2], # GOODBAD: 7
+			[1, 1, 2], # TREE: 1
+			[1, 2, 2], # NETA: 2
+			[1, 1, 0], # NETB: 3
+			[1, 2, 2], # TORUS: 4
+			[0, 1, 1], # GRAPH: 5
+			[0, 0, 2], # SAME: 6
+			[1, 2, 2], # GOODBAD: 7
 			[0, 0, 2]  # RAND: 8
 		],
 		# MPI_FFA
 		[
-			[0, 0, 0], # RING: 0
-			[0, 0, 0], # TREE: 1
-			[0, 0, 0], # NETA: 2
-			[0, 0, 0], # NETB: 3
-			[0, 0, 0], # TORUS: 4
-			[0, 0, 2], # GRAPH: 5
-			[0, 0, 0], # SAME: 6
-			[0, 0, 0], # GOODBAD: 7
-			[0, 0, 0]  # RAND: 8
+			[0, 1, 2], # RING: 0
+			[0, 1, 2], # TREE: 1
+			[0, 1, 2], # NETA: 2
+			[1, 2, 1], # NETB: 3
+			[0, 2, 2], # TORUS: 4
+			[0, 2, 2], # GRAPH: 5
+			[0, 0, 2], # SAME: 6
+			[1, 2, 1], # GOODBAD: 7
+			[0, 0, 2]  # RAND: 8
 		],
 		# MPI_GWO
 		[
-			[1, 2, 1], # RING: 0
-			[0, 0, 2], # TREE: 1
-			[0, 0, 1], # NETA: 2
-			[1, 0, 2], # NETB: 3
-			[0, 0, 1], # TORUS: 4
-			[0, 0, 2], # GRAPH: 5
-			[1, 1, 2], # SAME: 6
-			[1, 0, 1], # GOODBAD: 7
+			[0, 0, 1], # RING: 0
+			[0, 1, 1], # TREE: 1
+			[0, 1, 0], # NETA: 2
+			[0, 1, 0], # NETB: 3
+			[0, 0, 0], # TORUS: 4
+			[0, 2, 2], # GRAPH: 5
+			[0, 0, 2], # SAME: 6
+			[0, 2, 0], # GOODBAD: 7
 			[1, 1, 0]  # RAND: 8
 		],
 		# MPI_WOA
 		[
-			[1, 2, 2], # RING: 0
-			[0, 0, 1], # TREE: 1
-			[0, 0, 0], # NETA: 2
-			[0, 2, 1], # NETB: 3
-			[1, 2, 0], # TORUS: 4
-			[0, 2, 2], # GRAPH: 5
+			[0, 0, 1], # RING: 0
+			[1, 0, 1], # TREE: 1
+			[0, 2, 2], # NETA: 2
+			[1, 0, 2], # NETB: 3
+			[1, 2, 2], # TORUS: 4
+			[0, 1, 2], # GRAPH: 5
 			[1, 1, 0], # SAME: 6
 			[1, 0, 1], # GOODBAD: 7
 			[1, 0, 0]  # RAND: 8
 		],
 		# MPI_MVO
 		[
-			[0, 0, 0], # RING: 0
-			[0, 0, 0], # TREE: 1
-			[0, 0, 0], # NETA: 2
-			[0, 0, 0], # NETB: 3
-			[0, 0, 0], # TORUS: 4
-			[0, 1, 2], # GRAPH: 5
+			[0, 1, 0], # RING: 0
+			[1, 0, 1], # TREE: 1
+			[0, 0, 2], # NETA: 2
+			[1, 0, 1], # NETB: 3
+			[0, 0, 2], # TORUS: 4
+			[0, 2, 2], # GRAPH: 5
 			[1, 1, 0], # SAME: 6
 			[0, 2, 2], # GOODBAD: 7
 			[1, 1, 1]  # RAND: 8
 		],
 		# MPI_MFO
 		[
-			[0, 0, 1], # RING: 0
-			[0, 0, 0], # TREE: 1
+			[0, 0, 0], # RING: 0
+			[0, 1, 1], # TREE: 1
 			[0, 0, 0], # NETA: 2
 			[0, 0, 0], # NETB: 3
-			[0, 0, 0], # TORUS: 4
-			[0, 0, 0], # GRAPH: 5
-			[1, 2, 2], # SAME: 6
+			[0, 0, 1], # TORUS: 4
+			[0, 0, 2], # GRAPH: 5
+			[1, 1, 2], # SAME: 6
 			[1, 2, 1], # GOODBAD: 7
 			[0, 1, 0]  # RAND: 8
 		],
 		# MPI_CS
 		[
-			[1, 2, 1], # RING: 0
-			[0, 2, 1], # TREE: 1
-			[1, 2, 1], # NETA: 2
-			[0, 0, 1], # NETB: 3
-			[0, 0, 1], # TORUS: 4
+			[1, 2, 0], # RING: 0
+			[0, 2, 0], # TREE: 1
+			[1, 1, 1], # NETA: 2
+			[0, 2, 0], # NETB: 3
+			[1, 2, 0], # TORUS: 4
 			[0, 2, 0], # GRAPH: 5
-			[1, 0, 1], # SAME: 6
-			[0, 2, 0], # GOODBAD: 7
-			[0, 1, 2]  # RAND: 8
+			[1, 2, 0], # SAME: 6
+			[0, 0, 0], # GOODBAD: 7
+			[1, 1, 1]  # RAND: 8
 		]
 	]
 
