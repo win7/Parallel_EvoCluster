@@ -12,7 +12,6 @@ if __name__ == "__main__":
 	optimizer = ["SSA", "PSO", "GA", "BAT", "FFA", "GWO", "WOA", "MVO", "MFO", "CS", 
 				"MPI_SSA", "MPI_PSO", "MPI_GA", "MPI_BAT", "MPI_FFA", "MPI_GWO", "MPI_WOA", "MPI_MVO", "MPI_MFO", "MPI_CS",
 				"MP_SSA", "MP_PSO", "MP_GA", "MP_BAT", "MP_FFA", "MP_GWO", "MP_WOA", "MP_MVO", "MP_MFO", "MP_CS"]
-	optimizer = ["MP_SSA"] # ["MPI_SSA", "MPI_PSO", "MPI_GA", "MPI_BAT", "MPI_FFA", "MPI_GWO", "MPI_WOA", "MPI_MVO", "MPI_MFO", "MPI_CS"]
 
 	# Select objective function
 	# "SSE", "TWCV", "SC", "DB", "DI"
@@ -24,14 +23,14 @@ if __name__ == "__main__":
 	# "iris2D", "jain", "liver", "moons", "mouse", "pathbased", "seeds", "smiley", "sonar", "varied", "vary-density", "vertebral2", "vertebral3", "wdbc", "wine"
 	dataset_list = ["aggregation", "aniso", "appendicitis", "balance", "banknote", "blobs", "blood", "circles", "diagnosis_II", "ecoli", "flame", "glass", "heart", "ionosphere",
 					"iris", "iris2D", "jain", "liver", "moons", "mouse", "pathbased", "seeds", "smiley", "sonar", "varied", "vary-density", "vertebral2", "vertebral3", "wdbc", "wine"]
-	dataset_list = ["sonar"]
+	dataset_list = ["iris"]
 
 	# Select number of repetitions for each experiment.
 	# To obtain meaningful statistical results, usually 30 independent runs are executed for each algorithm.
-	num_runs = 1
+	num_runs = 50
 
 	# Select general parameters for all optimizers (population size, number of iterations, number of cores for MP)
-	params = {"population_size": cores * 30, "iterations": 30, "cores": 4}
+	params = {"population_size": cores * 100, "iterations": 100, "cores": cores}
 
 	# Choose whether to Export the results in different formats
 	export_flags = {
@@ -62,8 +61,8 @@ if __name__ == "__main__":
 		[6, 0, 0, 2, 1, 0], # SAME: 6
 		[7, 0, 0, 2, 3, 1], # GOODBAD: 7
 		[8, 0, 0, 1, 1, 0]  # RAND: 8
-	]   # Change under best params for congig1 and config2
-	# Select index for params_policy
+	]   # Change under best params for config1 and config2
+	# Select index for params_policy (topology)
 	# 0, 1, 2, 3, 4, 5, 6, 7, 8
 	index_policy = 2
 
