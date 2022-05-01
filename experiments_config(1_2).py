@@ -200,4 +200,4 @@ if __name__ == "__main__":
 					
 
 # Run:
-# python experiments_config1_2.py
+# python experiments_config(1_2).py
