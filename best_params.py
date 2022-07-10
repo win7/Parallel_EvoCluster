@@ -12,7 +12,7 @@ def min_max_scaling(series):
 def z_score_standardization(series):
     return (series - series.mean()) / series.std()
 
-config = "config2" # "config1", "config2"
+config = "config(1_2)" # "config1", "config2", "config(1_2)"
 
 # Only for combine files
 # -------
@@ -20,9 +20,9 @@ config = "config2" # "config1", "config2"
 # print(my_list)
 
 # combine all files in the list
-combined_csv = pd.concat([pd.read_csv("results_{}/{}/experiment_best_params.csv".format(config, f)) for f in my_list ])
+combined_csv = pd.concat([pd.read_csv("results_{}/{}/experiment_best_params.csv".format(config, f)) for f in my_list])
 # export to csv
-combined_csv.to_csv("best_params_{}.csv".format(config), index=False, encoding="utf-8-sig") """
+combined_csv.to_csv("best_params_{}.csv".format(config), index=False, encoding="utf-8") """
 
 # Run
 # python best_params.py
@@ -30,8 +30,7 @@ combined_csv.to_csv("best_params_{}.csv".format(config), index=False, encoding="
 
 # Get best params for config1 and config2
 # -------
-datasets = ["balance", "blood", "pathbased", "smiley", "vary-density", "wine"]
-
+""" datasets = ["balance", "blood", "pathbased", "smiley", "vary-density", "wine"]
 
 optimizers = ["MPI_SSA", "MPI_PSO", "MPI_GA", "MPI_BAT", "MPI_FFA", "MPI_GWO", "MPI_WOA", "MPI_MVO", "MPI_MFO", "MPI_CS"]
 topologies = ["RING", "TREE", "NETA", "NETB", "TORUS", "GRAPH", "SAME", "GOODBAD", "RAND"]
@@ -61,10 +60,40 @@ for optimizer in optimizers:
         print("Count Min.: {}".format(count_min))
 
         print(df_rating)
-        print()
+        print() """
 
 # Run
 # python best_params.py > z_config2.txt
+# -------
+
+# Get best params for config(1_2)
+# -------
+datasets = ["balance", "blood", "pathbased", "smiley", "vary-density", "wine"]
+
+optimizers = ["MPI_SSA", "MPI_PSO", "MPI_GA", "MPI_BAT", "MPI_FFA", "MPI_GWO", "MPI_WOA", "MPI_MVO", "MPI_MFO", "MPI_CS"]
+topologies = ["RING", "TREE", "NETA", "NETB", "TORUS", "GRAPH", "SAME", "GOODBAD", "RAND"]
+
+df = pd.read_csv("best_params_{}.csv".format(config))
+# print(df.head())
+
+group_df = df.groupby(["Optimizer", "Topology"])
+# print(group_df.get_group(('MPI_SSA', 'RING')))
+
+for optimizer in optimizers:
+    for topology in topologies:
+        df_rating = pd.DataFrame() 
+        key = (optimizer, topology)
+        aux = group_df.get_group(key)
+        mean_metric = aux["SSE"].mean()
+        mean_execution = aux["ExecutionTime"].mean()
+
+        print((optimizer, topology))
+        print("Mean Metric: {}".format(mean_metric))
+        print("Mean Time: {}".format(mean_execution))
+        print()
+
+# Run
+# python best_params.py > z_config(1_2).txt
 # -------
 
 """ for name, group in group_df:

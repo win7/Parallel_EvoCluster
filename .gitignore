@@ -1,6 +1,7 @@
 results/
 results_config1/
 results_config2/
+results_config(1_2)/
 temp/
 
 *.pyc 
