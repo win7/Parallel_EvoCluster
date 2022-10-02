@@ -26,7 +26,7 @@ import warnings
 
 warnings.simplefilter(action="ignore")
 
-def run(optimizer, objective_function, dataset_list, num_runs, params, export_flags, policy, auto_cluster=True, num_clusters="supervised", labels_exist=True, metric="euclidean"):
+def run(optimizer, objective_function, dataset_list, num_runs, params, export_flags, list_policy, auto_cluster=True, num_clusters="supervised", labels_exist=True, metric="euclidean"):
 	"""
 	It serves as the main interface of the framework for running the experiments.
 
@@ -51,15 +51,15 @@ def run(optimizer, objective_function, dataset_list, num_runs, params, export_fl
 		3. export_details_labels (Exporting the labels detailed results in files)
 		4. export_convergence (Exporting the covergence plots)
 		5. export_boxplot (Exporting the box plots)
-	policy: set
-		policy = {
+	list_policy: set
+		[{
 			"topology": "RING",		# Change: RING, TREE, NETA. NETB, TORUS, GRAPH, SAME, GOODBAD, RAND
 			"emigration": "CLONE", 	# Change: CLONE, REMOVE
 			"choice_emi": "BEST", 	# Change: BEST, WORST, RANDOM
 			"choice_imm": "WORST", 	# Change: BEST, WORST, RANDOM
 			"number_emi_imm": 5, 	# Change: 1, 2, 3, 4, 5
 			"interval_emi_imm": 2 	# Change: 1, 2, 4, 6, 8, 10
-		}
+		}, {}, {}]
 	auto_cluster: boolean, default = True
 		Choose whether the number of clusters is detected automatically. 
 		If True, select one of the following: "supervised", "CH", "silhouette", "elbow", "gap", "min", "max", "median" for num_clusters. 
@@ -235,7 +235,7 @@ def run(optimizer, objective_function, dataset_list, num_runs, params, export_fl
 
 					objective_name = objective_function[j]
 
-					# sol = selector(optimizer[i], objective_name, k[h], f[h], population_size, iterations, points[h], metric, dataset_list[h], policy, population)
+					# sol = selector(optimizer[i], objective_name, k[h], f[h], population_size, iterations, points[h], metric, dataset_list[h], list_policy[i], population)
 
 					# ---------------------
 					debug = False	# True for testing (serial)
@@ -248,7 +248,7 @@ def run(optimizer, objective_function, dataset_list, num_runs, params, export_fl
 						ub = 1
 						dimension = k[h] * f[h] # Number of dimensions
 						population = np.random.uniform(0, 1, (population_size, dimension)) * (ub - lb) + lb
-						sol = selector(optimizer[i], objective_name, k[h], f[h], population_size, iterations, points[h], metric, dataset_list[h], policy, population, cores)
+						sol = selector(optimizer[i], objective_name, k[h], f[h], population_size, iterations, points[h], metric, dataset_list[h], list_policy[i], population, cores)
 					else:
 						params = Params()
 						params.algorithm = optimizer[i]
@@ -261,7 +261,7 @@ def run(optimizer, objective_function, dataset_list, num_runs, params, export_fl
 						params.points = points[h]
 						params.metric = metric
 						params.dataset_name = dataset_list[h]
-						params.policy = policy
+						params.policy = list_policy[i]
 						params.cores = cores
 						params.save()
 

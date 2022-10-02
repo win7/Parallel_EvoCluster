@@ -12,6 +12,7 @@ if __name__ == "__main__":
 	optimizer = ["SSA", "PSO", "GA", "BAT", "FFA", "GWO", "WOA", "MVO", "MFO", "CS", 
 				"MPI_SSA", "MPI_PSO", "MPI_GA", "MPI_BAT", "MPI_FFA", "MPI_GWO", "MPI_WOA", "MPI_MVO", "MPI_MFO", "MPI_CS",
 				"MP_SSA", "MP_PSO", "MP_GA", "MP_BAT", "MP_FFA", "MP_GWO", "MP_WOA", "MP_MVO", "MP_MFO", "MP_CS"]
+	optimizer = ["SSA",	"MPI_SSA", "MP_SSA"]
 
 	# Select objective function
 	# "SSE", "TWCV", "SC", "DB", "DI"
@@ -21,16 +22,22 @@ if __name__ == "__main__":
 	# Select data sets
 	# "aggregation", "aniso", "appendicitis", "balance", "banknote", "blobs", "blood", "circles", "diagnosis_II", "ecoli", "flame","glass", "heart", "ionosphere", "iris", 
 	# "iris2D", "jain", "liver", "moons", "mouse", "pathbased", "seeds", "smiley", "sonar", "varied", "vary-density", "vertebral2", "vertebral3", "wdbc", "wine"
-	dataset_list = ["aggregation", "aniso", "appendicitis", "balance", "banknote", "blobs", "blood", "circles", "diagnosis_II", "ecoli", "flame", "glass", "heart", "ionosphere",
-					"iris", "iris2D", "jain", "liver", "moons", "mouse", "pathbased", "seeds", "smiley", "sonar", "varied", "vary-density", "vertebral2", "vertebral3", "wdbc", "wine"]
-	dataset_list = ["iris"]
+	dataset_list = np.array(["aggregation", "aniso", "appendicitis", "balance", "banknote", "blobs", "blood", "circles", "diagnosis_II", "ecoli", 
+					"flame", "glass", "heart", "iris", "iris2D", "ionosphere", "jain", "liver", "moons", "mouse", 
+					"pathbased", "seeds", "smiley", "sonar", "varied", "vary-density", "vertebral2", "vertebral3", "wdbc", "wine"])
+
+	# Select cluster numbers for dataset
+	clusters = np.array([7, 3, 2, 3, 2, 3, 2, 2, 2, 5, 2, 6, 2, 3, 3, 2, 2, 2, 2, 3, 3, 3, 4, 2, 3, 3, 2, 3, 2, 3])
+
+	# Select index for dataset and clusters numbers
+	index = [13, 29]
 
 	# Select number of repetitions for each experiment.
 	# To obtain meaningful statistical results, usually 30 independent runs are executed for each algorithm.
-	num_runs = 50
+	num_runs = 2
 
 	# Select general parameters for all optimizers (population size, number of iterations, number of cores for MP)
-	params = {"population_size": cores * 100, "iterations": 100, "cores": cores}
+	params = {"population_size": cores * 100, "iterations": 20, "cores": cores}
 
 	# Choose whether to Export the results in different formats
 	export_flags = {
@@ -39,7 +46,7 @@ if __name__ == "__main__":
 		"export_details_labels": True,
 		"export_best_params": False,
 		"export_convergence": True,
-		"export_boxplot": False,
+		"export_boxplot": True,
 		"export_runtime": True
 	}
 
@@ -51,33 +58,50 @@ if __name__ == "__main__":
 	number_emi_imm = [1, 2, 3, 4, 5]
 	interval_emi_imm = [1, 2, 4, 6, 8, 10]
 
-	params_policy = [
-		[0, 0, 0, 1, 4, 1], # RING: 0
-		[1, 0, 0, 2, 4, 0], # TREE: 1
-		[2, 0, 0, 2, 1, 0], # NETA: 2
-		[3, 0, 0, 2, 2, 0], # NETB: 3
-		[4, 0, 0, 2, 0, 0], # TORUS: 4
-		[5, 0, 0, 2, 0, 1], # GRAPH: 5
-		[6, 0, 0, 2, 1, 0], # SAME: 6
-		[7, 0, 0, 2, 3, 1], # GOODBAD: 7
-		[8, 0, 0, 1, 1, 0]  # RAND: 8
+	best_params_policy = [
+		[2, 0, 1, 0, 4, 0], # MPI_SSA: NETA
+		[3, 0, 1, 1, 4, 0], # MPI_PSO: NETB
+		[2, 0, 0, 0, 3, 0], # MPI_GA: NETA
+		[3, 1, 1, 0, 2, 4], # MPI_BAT: NETB
+		[2, 0, 1, 2, 4, 1], # MPI_FFA: NETA
+		[5, 0, 2, 2, 2, 1], # MPI_GWO: GRAPH
+		[3, 1, 0, 2, 3, 0], # MPI_WOA: NETB
+		[5, 0, 2, 2, 0, 0], # MPI_MVO: GRAPH
+		[5, 0, 0, 2, 1, 5], # MPI_MFO: GRAPH
+		[1, 0, 2, 0, 1, 1]  # MPI_CS: TREE
 	]   # Change under best params for config1 and config2
 	# Select index for params_policy (topology)
 	# 0, 1, 2, 3, 4, 5, 6, 7, 8
-	index_policy = 2
 
-	policy = {
-		"topology": topology[params_policy[index_policy][0]],
-		"emigration": emigration[params_policy[index_policy][1]],
-		"choice_emi": choice_emi[params_policy[index_policy][2]],
-		"choice_imm": choice_imm[params_policy[index_policy][3]],
-		"number_emi_imm": number_emi_imm[params_policy[index_policy][4]],
-		"interval_emi_imm": interval_emi_imm[params_policy[index_policy][5]]
-	}
+	mpi_optimizer = ["MPI_SSA", "MPI_PSO", "MPI_GA", "MPI_BAT", "MPI_FFA", "MPI_GWO", "MPI_WOA", "MPI_MVO", "MPI_MFO", "MPI_CS"]
+	list_policy = []
+	for i, item in enumerate(optimizer):
+		if item in mpi_optimizer:
+			index_policy = mpi_optimizer.index(item)
+
+			policy = {
+				"topology": topology[best_params_policy[index_policy][0]],
+				"emigration": emigration[best_params_policy[index_policy][1]],
+				"choice_emi": choice_emi[best_params_policy[index_policy][2]],
+				"choice_imm": choice_imm[best_params_policy[index_policy][3]],
+				"number_emi_imm": number_emi_imm[best_params_policy[index_policy][4]],
+				"interval_emi_imm": interval_emi_imm[best_params_policy[index_policy][5]]
+			}
+			print(policy)
+		else:
+			policy = {
+				"topology": "-",
+				"emigration": "-",
+				"choice_emi": "-",
+				"choice_imm": "-",
+				"number_emi_imm": "-",
+				"interval_emi_imm": "-"
+			}
+		list_policy.append(policy)
 
 	# run(optimizer, objective_function, dataset_list, num_runs, params, export_flags, policy)
-	run(optimizer, objective_function, dataset_list, num_runs, params, export_flags, policy, 
-		auto_cluster=False, num_clusters=[2], labels_exist=True, metric="euclidean")
+	run(optimizer, objective_function, list(dataset_list[index]), num_runs, params, export_flags, list_policy,
+		auto_cluster=False, num_clusters=list(clusters[index]), labels_exist=True, metric="euclidean")
 
 # Run:
 # python example.py
