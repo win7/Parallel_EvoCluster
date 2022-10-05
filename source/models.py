@@ -389,7 +389,7 @@ policy = {
 reemplazaralos individuos de la isla local.
 
 - Si se elige la política de emigración remover,
-entonceslos individuos inmigrantes sustituyen los espacios
+entonces los individuos inmigrantes sustituyen los espacios
 libres existentes en la isla local.Por el contrario.
 - Si se elige la política de migración clonar,
 entonces los individuos inmigrantes reemplazan a los 
