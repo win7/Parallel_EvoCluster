@@ -118,7 +118,6 @@ def PBAT(objective_function, lb, ub, dimension, population_size, iterations, num
 		# Migrations
 		if i % policy["interval_emi_imm"] == 0:
 			migration_index = np.zeros(policy["number_emi_imm"] * size, dtype=int)
-			print(len(migration_index))
 			run_migration(comm, pop, dimension, migration_index, policy, rank, size)
 		# ------------------------
 

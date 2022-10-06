@@ -12,7 +12,7 @@ if __name__ == "__main__":
 	optimizer = ["SSA", "PSO", "GA", "BAT", "FFA", "GWO", "WOA", "MVO", "MFO", "CS", 
 				"MPI_SSA", "MPI_PSO", "MPI_GA", "MPI_BAT", "MPI_FFA", "MPI_GWO", "MPI_WOA", "MPI_MVO", "MPI_MFO", "MPI_CS",
 				"MP_SSA", "MP_PSO", "MP_GA", "MP_BAT", "MP_FFA", "MP_GWO", "MP_WOA", "MP_MVO", "MP_MFO", "MP_CS"]
-	optimizer = ["MPI_SSA", "MPI_PSO", "MPI_GA", "MPI_BAT", "MPI_FFA", "MPI_GWO", "MPI_WOA", "MPI_MVO", "MPI_MFO", "MPI_CS"]
+	# optimizer = ["MPI_SSA", "MPI_PSO", "MPI_GA", "MPI_BAT", "MPI_FFA", "MPI_GWO", "MPI_WOA", "MPI_MVO", "MPI_MFO", "MPI_CS"]
 
 	# Select objective function
 	# "SSE", "TWCV", "SC", "DB", "DI"
@@ -34,10 +34,10 @@ if __name__ == "__main__":
 
 	# Select number of repetitions for each experiment.
 	# To obtain meaningful statistical results, usually 30 independent runs are executed for each algorithm.
-	num_runs = 1
+	num_runs = 2
 
 	# Select general parameters for all optimizers (population size, number of iterations, number of cores for MP)
-	params = {"population_size": cores * 30, "iterations": 30, "cores": cores}
+	params = {"population_size": cores * 30, "iterations": 100, "cores": cores}
 
 	# Choose whether to Export the results in different formats
 	export_flags = {
@@ -96,7 +96,7 @@ if __name__ == "__main__":
 				"interval_emi_imm": "-"
 			}
 		list_policy.append(policy)
-	print(list_policy)
+	# print(list_policy)
 
 	# run(optimizer, objective_function, dataset_list, num_runs, params, export_flags, policy)
 	run(optimizer, objective_function, list(dataset_list[index]), num_runs, params, export_flags, list_policy,
