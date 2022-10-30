@@ -48,7 +48,7 @@ def PWOA(objective_function, lb, ub, dimension, population_size, iterations, num
 
 	sol = Solution()
 
-	print("MPI_WOA is optimizing \"" + objective_function.__name__ + "\"")
+	print("WOA_mpi is optimizing \"" + objective_function.__name__ + "\"")
 
 	timer_start = time.time()
 	sol.start_time = time.strftime("%Y-%m-%d-%H-%M-%S")
@@ -130,7 +130,7 @@ def PWOA(objective_function, lb, ub, dimension, population_size, iterations, num
 	sol.end_time = time.strftime("%Y-%m-%d-%H-%M-%S")
 	sol.runtime = timer_end - timer_start
 	sol.convergence = convergence_curve
-	sol.optimizer = "MPI_WOA"
+	sol.optimizer = "WOA_mpi"
 	sol.objf_name = objective_function.__name__
 	sol.dataset_name = dataset_name
 	sol.best = leader_score

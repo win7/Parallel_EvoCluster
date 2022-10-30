@@ -16,10 +16,10 @@ def run(results_directory, optimizer, objective_function, dataset_list, iteratio
 
 			bars = pd.DataFrame(detailed_data, columns=["Optimizer", "ExecutionTime"])
 			bars = bars.sort_values(by=["ExecutionTime"], ascending=False)
-			ax = bars.plot(x="Optimizer", y="ExecutionTime", kind="barh", xlabel="Optimizers", ylabel="Runtime (s)", title="", legend=True)
+			ax = bars.plot(x="Optimizer", y="ExecutionTime", kind="barh", xlabel="Runtime (s)", ylabel="Optimizers", title="", legend=True)
 			# annotate
 			ax.bar_label(ax.containers[0], label_type="edge", rotation=0)
-			ax.set_xlabel("Runtime (s)")
+			
 			plt.suptitle("Runtime: {} dataset".format(dataset_list[i]))
 			plt.xticks(rotation=0)
 			plt.legend(loc="upper right")
@@ -30,14 +30,14 @@ def run(results_directory, optimizer, objective_function, dataset_list, iteratio
 			plt.clf()
 
 if __name__ == "__main__":
-	results_directory = "results/2022-10-18_09_44_21"
+	results_directory = "results/2022-10-30_13:09:03"
 	optimizer = ["SSA", "PSO", "GA", "BAT", "FFA", "GWO", "WOA", "MVO", "MFO", "CS", 
-				 "MPI_SSA", "MPI_PSO", "MPI_GA", "MPI_BAT", "MPI_FFA", "MPI_GWO", "MPI_WOA", "MPI_MVO", "MPI_MFO", "MPI_CS",
-				 "MP_SSA", "MP_PSO", "MP_GA", "MP_BAT", "MP_FFA", "MP_GWO", "MP_WOA", "MP_MVO", "MP_MFO", "MP_CS"]
+				 "SSA_mpi", "PSO_mpi", "GA_mpi", "BAT_mpi", "FFA_mpi", "GWO_mpi", "WOA_mpi", "MVO_mpi", "MFO_mpi", "CS_mpi",
+				 "SSA_mp", "PSO_mp", "GA_mp", "BAT_mp", "FFA_mp", "GWO_mp", "WOA_mp", "MVO_mp", "MFO_mp", "CS_mp"]
 
 	objective_function = ["SSE"]
-	dataset_list = ["aniso"]
-	iterations = 100
+	dataset_list = ["iris"]
+	iterations = 30
 	
 	run(results_directory, optimizer, objective_function, dataset_list, iterations, show=True)
 

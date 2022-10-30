@@ -44,7 +44,7 @@ def PBAT(objective_function, lb, ub, dimension, population_size, iterations, num
 
 	# Initialize solution for the final results
 	sol = Solution()
-	print("MP_BAT is optimizing \"" + objective_function.__name__ + "\"")
+	print("BAT_mp is optimizing \"" + objective_function.__name__ + "\"")
 
 	# Initialize timer for the experiment
 	timer_start = time.time()
@@ -124,7 +124,7 @@ def PBAT(objective_function, lb, ub, dimension, population_size, iterations, num
 	sol.end_time = time.strftime("%Y-%m-%d-%H-%M-%S")
 	sol.runtime = timer_end - timer_start
 	sol.convergence = convergence_curve
-	sol.optimizer = "MP_BAT"
+	sol.optimizer = "BAT_mp"
 	sol.objf_name = objective_function.__name__
 	sol.dataset_name = dataset_name
 	sol.labels_pred = np.array(best_labels_pred, dtype=np.int64)

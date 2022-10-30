@@ -85,7 +85,7 @@ def PMVO(objective_function, lb, ub, dimension, population_size, iterations, num
 
 	iteration = 1
 
-	print("MP_MVO is optimizing \"" + objective_function.__name__ + "\"")
+	print("MVO_mp is optimizing \"" + objective_function.__name__ + "\"")
 
 	timer_start = time.time()
 	sol.start_time = time.strftime("%Y-%m-%d-%H-%M-%S")
@@ -162,7 +162,7 @@ def PMVO(objective_function, lb, ub, dimension, population_size, iterations, num
 	sol.end_time = time.strftime("%Y-%m-%d-%H-%M-%S")
 	sol.runtime = timer_end - timer_start
 	sol.convergence = convergence
-	sol.optimizer = "MP_MVO"
+	sol.optimizer = "MVO_mp"
 	sol.objf_name = objective_function.__name__
 	sol.dataset_name = dataset_name
 	sol.best_individual = best_universe

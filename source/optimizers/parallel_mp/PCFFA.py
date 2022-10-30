@@ -68,7 +68,7 @@ def PFFA(objective_function, lb, ub, dimension, population_size, iterations, num
 	convergence = []
 	sol = Solution()
 
-	print("MP_FFA is optimizing \"" + objective_function.__name__ + "\"")
+	print("FFA_mp is optimizing \"" + objective_function.__name__ + "\"")
 
 	timer_start = time.time()
 	sol.start_time = time.strftime("%Y-%m-%d-%H-%M-%S")
@@ -151,7 +151,7 @@ def PFFA(objective_function, lb, ub, dimension, population_size, iterations, num
 	sol.end_time = time.strftime("%Y-%m-%d-%H-%M-%S")
 	sol.runtime = timer_end - timer_start
 	sol.convergence = convergence
-	sol.optimizer = "MP_FFA"
+	sol.optimizer = "FFA_mp"
 	sol.objf_name = objective_function.__name__
 	sol.dataset_name = dataset_name
 	sol.labels_pred = np.array(labels_pred_best, dtype=np.int64)

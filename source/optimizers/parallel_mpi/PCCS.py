@@ -115,7 +115,7 @@ def PCS(objective_function, lb, ub, dimension, population_size, iterations, num_
 
 	sol = Solution()
 
-	print("MPI_CS is optimizing \"" + objective_function.__name__ + "\"")
+	print("CS_mpi is optimizing \"" + objective_function.__name__ + "\"")
 
 	timer_start = time.time()
 	sol.start_time = time.strftime("%Y-%m-%d-%H-%M-%S")
@@ -158,7 +158,7 @@ def PCS(objective_function, lb, ub, dimension, population_size, iterations, num_
 	sol.end_time = time.strftime("%Y-%m-%d-%H-%M-%S")
 	sol.runtime = timer_end - timer_start
 	sol.convergence = convergence
-	sol.optimizer = "MPI_CS"
+	sol.optimizer = "CS_mpi"
 	sol.objf_name = objective_function.__name__
 	sol.dataset_name = dataset_name
 	sol.best_individual = best_nest

@@ -266,7 +266,7 @@ def run(optimizer, objective_function, dataset_list, num_runs, params, export_fl
 						params.save()
 
 						# print(optimizer[i])
-						if "MPI_" == optimizer[i][:4]:
+						if "_mpi" == optimizer[i][-4:]:
 							print("Parallel MPI version")
 							# print(os.system("pwd"))
 							# result = os.system("mpirun -np 2 python -m mpi4py pyfile hello_mpi.py")
@@ -278,7 +278,7 @@ def run(optimizer, objective_function, dataset_list, num_runs, params, export_fl
 							# prog = subprocess.Popen('mpirun -np 24 --oversubscribe python selector.py', stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 							os.system("mpirun -np 24 --oversubscribe python selector.py")
 							# result = os.system("mpiexec -n 24 python selector.py")
-						elif "MP_" == optimizer[i][:3]:
+						elif "_mp" == optimizer[i][-3:]:
 							print("Parallel MP version")
 							os.system("python selector.py")
 						else:

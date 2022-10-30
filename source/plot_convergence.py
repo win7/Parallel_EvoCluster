@@ -21,10 +21,10 @@ def run(results_directory, optimizer, objective_function, dataset_list, iteratio
 			all_generations = [x + 1 for x in range(start_iteration, iterations)]
 			for k in range(len(optimizer)):
 				optimizer_name = optimizer[k]
-				
-				if "MPI_" == optimizer_name[:4]:
+
+				if "_mpi" == optimizer[k][-4:]:
 					line_style = "dashed"
-				elif "MP_" == optimizer_name[:3]:
+				elif "_mp" == optimizer[k][-3:]:
 					line_style = "dotted"
 				else:
 					line_style = "solid"
@@ -49,14 +49,14 @@ def run(results_directory, optimizer, objective_function, dataset_list, iteratio
 			plt.clf()
 
 if __name__ == "__main__":
-	results_directory = "results/2022-10-18_09_44_21"
+	results_directory = "results/2022-10-30_13:09:03"
 	optimizer = ["SSA", "PSO", "GA", "BAT", "FFA", "GWO", "WOA", "MVO", "MFO", "CS", 
-				 "MPI_SSA", "MPI_PSO", "MPI_GA", "MPI_BAT", "MPI_FFA", "MPI_GWO", "MPI_WOA", "MPI_MVO", "MPI_MFO", "MPI_CS",
-				 "MP_SSA", "MP_PSO", "MP_GA", "MP_BAT", "MP_FFA", "MP_GWO", "MP_WOA", "MP_MVO", "MP_MFO", "MP_CS"]
+				 "SSA_mpi", "PSO_mpi", "GA_mpi", "BAT_mpi", "FFA_mpi", "GWO_mpi", "WOA_mpi", "MVO_mpi", "MFO_mpi", "CS_mpi",
+				 "SSA_mp", "PSO_mp", "GA_mp", "BAT_mp", "FFA_mp", "GWO_mp", "WOA_mp", "MVO_mp", "MFO_mp", "CS_mp"]
 
 	objective_function = ["SSE"]
-	dataset_list = ["aniso"]
-	iterations = 100
+	dataset_list = ["iris"]
+	iterations = 30
 	
 	run(results_directory, optimizer, objective_function, dataset_list, iterations, show=True)
 

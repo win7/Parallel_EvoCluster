@@ -401,7 +401,7 @@ def PGA(objective_function, lb, ub, dimension, population_size, iterations, num_
 
 	convergence_curve = np.zeros(iterations)
 
-	print("MPI_GA is optimizing \"" + objective_function.__name__ + "\"")
+	print("GA_mpi is optimizing \"" + objective_function.__name__ + "\"")
 
 	timer_start = time.time()
 	sol.start_time = time.strftime("%Y-%m-%d-%H-%M-%S")
@@ -439,7 +439,7 @@ def PGA(objective_function, lb, ub, dimension, population_size, iterations, num_
 	sol.end_time = time.strftime("%Y-%m-%d-%H-%M-%S")
 	sol.runtime = timer_end - timer_start
 	sol.convergence = convergence_curve
-	sol.optimizer = "MPI_GA"
+	sol.optimizer = "GA_mpi"
 	sol.dataset_name = dataset_name
 	sol.labels_pred = np.array(best_labels_pred, dtype=np.int64)
 	sol.objf_name = objective_function.__name__
