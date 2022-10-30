@@ -30,11 +30,11 @@ if __name__ == "__main__":
 	clusters = np.array([7, 3, 2, 3, 2, 3, 2, 2, 2, 5, 2, 6, 2, 3, 3, 2, 2, 2, 2, 3, 3, 3, 4, 2, 3, 3, 2, 3, 2, 3])
 
 	# Select index for dataset and clusters numbers
-	index = [13]
+	index = [1, 4, 5, 9, 15, 17, 19, 28]
 
 	# Select number of repetitions for each experiment.
 	# To obtain meaningful statistical results, usually 30 independent runs are executed for each algorithm.
-	num_runs = 2
+	num_runs = 10
 
 	# Select general parameters for all optimizers (population size, number of iterations, number of cores for MP)
 	params = {"population_size": cores * 30, "iterations": 100, "cores": cores}

@@ -147,17 +147,6 @@ def PBAT(objective_function, lb, ub, dimension, population_size, iterations, num
 				best_fitness = sol.fitness
 				best_sol = sol
 		best_sol.save()
-
-		""" # Save fitness into file
-		file = open(path_file_metric, "a")
-		file.write("{},{}\n".format(best_sol.fitness, best_sol.execution_time))
-		file.close()
-
-		# Save convergence into file
-		file = open(path_file_convergence, "a")
-		for item in best_sol.convergence:
-			file.write("{}\n".format(item))
-		file.close() """
 	else:
 		comm.send(sol, dest=0)
 	# ------------------------
