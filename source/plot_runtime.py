@@ -5,7 +5,7 @@ import pandas as pd
 def run(results_directory, optimizer, objective_function, dataset_list, iterations, show=False):
 	plt.ioff()
 	file_results_data = pd.read_csv(results_directory + "/experiment_avg.csv")
-	
+
 	for i in range(len(dataset_list)):
 		for j in range (len(objective_function)):
 			objective_name = objective_function[j]
@@ -30,16 +30,16 @@ def run(results_directory, optimizer, objective_function, dataset_list, iteratio
 			plt.clf()
 
 if __name__ == "__main__":
-	results_directory = "2021-05-20_23:35:35"
+	results_directory = "results/2022-10-18_09_44_21"
 	optimizer = ["SSA", "PSO", "GA", "BAT", "FFA", "GWO", "WOA", "MVO", "MFO", "CS", 
-				"MPI_SSA", "MPI_PSO", "MPI_GA", "MPI_BAT", "MPI_FFA", "MPI_GWO", "MPI_WOA", "MPI_MVO", "MPI_MFO", "MPI_CS",
-				"MP_SSA", "MP_PSO", "MP_GA", "MP_BAT", "MP_FFA", "MP_GWO", "MP_WOA", "MP_MVO", "MP_MFO", "MP_CS"]
+				 "MPI_SSA", "MPI_PSO", "MPI_GA", "MPI_BAT", "MPI_FFA", "MPI_GWO", "MPI_WOA", "MPI_MVO", "MPI_MFO", "MPI_CS",
+				 "MP_SSA", "MP_PSO", "MP_GA", "MP_BAT", "MP_FFA", "MP_GWO", "MP_WOA", "MP_MVO", "MP_MFO", "MP_CS"]
 
 	objective_function = ["SSE"]
-	dataset_list = ["iris", "wine"]
+	dataset_list = ["aniso"]
 	iterations = 100
 	
 	run(results_directory, optimizer, objective_function, dataset_list, iterations, show=True)
 
 # Run:
-# $ python utils/plot_runtime.py
+# $ python source/plot_runtime.py
