@@ -49,14 +49,14 @@ def run(results_directory, optimizer, objective_function, dataset_list, iteratio
 			plt.clf()
 
 if __name__ == "__main__":
-	results_directory = "results/2022-10-30_13:09:03"
+	results_directory = "results/2022-10-30_09:51:52"
 	optimizer = ["SSA", "PSO", "GA", "BAT", "FFA", "GWO", "WOA", "MVO", "MFO", "CS", 
 				 "SSA_mpi", "PSO_mpi", "GA_mpi", "BAT_mpi", "FFA_mpi", "GWO_mpi", "WOA_mpi", "MVO_mpi", "MFO_mpi", "CS_mpi",
 				 "SSA_mp", "PSO_mp", "GA_mp", "BAT_mp", "FFA_mp", "GWO_mp", "WOA_mp", "MVO_mp", "MFO_mp", "CS_mp"]
 
 	objective_function = ["SSE"]
-	dataset_list = ["iris"]
-	iterations = 30
+	dataset_list = ["ecoli"]
+	iterations = 100
 	
 	run(results_directory, optimizer, objective_function, dataset_list, iterations, show=True)
 
