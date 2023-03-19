@@ -17,7 +17,7 @@ def PSSA(objective_function, lb, ub, dimension, population_size, iterations, num
 	# dimension = 30
 	# population_size = 50 # Number of search agents
 
-	convergence_curve = np.zeros(iterations)
+	convergence = np.zeros(iterations)
 
 	# Initialize the positions of salps
 	# ------- Parallel -------
@@ -67,7 +67,7 @@ def PSSA(objective_function, lb, ub, dimension, population_size, iterations, num
 	food_fitness[0] = sorted_salps_fitness[0]
 	food_labels_pred[:] = sorted_labels_pred[0]
 	
-	convergence_curve[0] = food_fitness[0]
+	convergence[0] = food_fitness[0]
 	print(["At iteration 0 the best fitness is " + str(food_fitness)])
 	
 	iteration = 1
@@ -122,7 +122,7 @@ def PSSA(objective_function, lb, ub, dimension, population_size, iterations, num
 						food_labels_pred[:] = np.copy(salp_labels_pred[k, :])
 		# ------------------------
 
-		convergence_curve[iteration] = food_fitness[0]
+		convergence[iteration] = food_fitness[0]
 		iteration += 1
 		# Display best fitness along the iteration
 		print(["At iteration " + str(iteration - 1) + " the best fitness is " + str(food_fitness[0])])
@@ -130,7 +130,7 @@ def PSSA(objective_function, lb, ub, dimension, population_size, iterations, num
 	timer_end = time.time()
 	sol.end_time = time.strftime("%Y-%m-%d-%H-%M-%S")
 	sol.runtime = timer_end - timer_start
-	sol.convergence = convergence_curve
+	sol.convergence = convergence
 	sol.optimizer = "SSA_mp"
 	sol.objf_name = objective_function.__name__
 	sol.dataset_name = dataset_name

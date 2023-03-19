@@ -705,7 +705,7 @@ def CSSO(objective_function, lb, ub, dimension, population_size, iterations, num
 	# print(points)
 
 	sol = Solution()
-	convergence_curve = []
+	convergence = []
 	print("SSO is optimizing \"" + objective_function.__name__ + "\"")
 
 	timer_start = time.time()
@@ -729,7 +729,7 @@ def CSSO(objective_function, lb, ub, dimension, population_size, iterations, num
 		index_best = population.index_best
 		fitness = population.spiders[index_best].get_fitness()
 		
-		convergence_curve.append(fitness)
+		convergence.append(fitness)
 		print(["At iteration " + str(k) + " the best fitness is " + str(fitness)])
 
 	# Show results
@@ -748,7 +748,7 @@ def CSSO(objective_function, lb, ub, dimension, population_size, iterations, num
 	timer_end = time.time()
 	sol.end_time = time.strftime("%Y-%m-%d-%H-%M-%S")
 	sol.runtime = timer_end - timer_start
-	sol.convergence = convergence_curve
+	sol.convergence = convergence
 	sol.optimizer = "SSO"
 	sol.objf_name = objective_function.__name__
 	sol.dataset_name = dataset_name

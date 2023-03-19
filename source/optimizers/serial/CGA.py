@@ -386,7 +386,7 @@ def GA(objective_function, lb, ub, dimension, population_size, iterations, num_c
 	for k in range(dimension):
 		ga[:, k] = np.random.uniform(0, 1, population_size) * (ub - lb) + lb
 
-	convergence_curve = np.zeros(iterations)
+	convergence = np.zeros(iterations)
 
 	print("GA is optimizing \"" + objective_function.__name__ + "\"")
 
@@ -410,7 +410,7 @@ def GA(objective_function, lb, ub, dimension, population_size, iterations, num_c
 		# Sort from best to worst
 		ga, scores = sort_population(ga, scores)
 
-		convergence_curve[k] = best_score
+		convergence[k] = best_score
 		print(["At iteration " + str(k) + " the best fitness is " + str(best_score)])
 
 	best_labels_pred = np.asarray(best_labels_pred)
@@ -418,7 +418,7 @@ def GA(objective_function, lb, ub, dimension, population_size, iterations, num_c
 	sol.best_individual = best_individual
 	sol.end_time = time.strftime("%Y-%m-%d-%H-%M-%S")
 	sol.runtime = timer_end - timer_start
-	sol.convergence = convergence_curve
+	sol.convergence = convergence
 	sol.optimizer = "GA"
 	sol.dataset_name = dataset_name
 	sol.labels_pred = np.array(best_labels_pred, dtype=np.int64)

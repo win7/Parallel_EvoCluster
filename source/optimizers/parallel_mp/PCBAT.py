@@ -30,7 +30,7 @@ def PBAT(objective_function, lb, ub, dimension, population_size, iterations, num
 	# ------- Parallel -------
 	Q = pymp.shared.array(population_size, dtype="float")
 	v = pymp.shared.array((population_size, dimension), dtype="float")
-	convergence_curve = []
+	convergence = []
 
 	# Initialize the population/solutions
 	pop = pymp.shared.array((population_size, dimension), dtype="float")
@@ -117,13 +117,13 @@ def PBAT(objective_function, lb, ub, dimension, population_size, iterations, num
 		# ------------------------
 
 		# update convergence curve
-		convergence_curve.append(fmin[0])
+		convergence.append(fmin[0])
 		print(["At iteration " + str(i) + " the best fitness is " + str(fmin[0])])
 
 	timer_end = time.time()
 	sol.end_time = time.strftime("%Y-%m-%d-%H-%M-%S")
 	sol.runtime = timer_end - timer_start
-	sol.convergence = convergence_curve
+	sol.convergence = convergence
 	sol.optimizer = "BAT_mp"
 	sol.objf_name = objective_function.__name__
 	sol.dataset_name = dataset_name

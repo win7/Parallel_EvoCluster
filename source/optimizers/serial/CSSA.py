@@ -13,7 +13,7 @@ def SSA(objective_function, lb, ub, dimension, population_size, iterations, num_
 	# dimension = 30
 	# population_size = 50 # Number of search agents
 
-	convergence_curve = np.zeros(iterations)
+	convergence = np.zeros(iterations)
 
 	# Initialize the positions of salps
 	salp_positions = np.copy(population) # np.random.uniform(0, 1, (population_size, dimension)) * (ub - lb) + lb
@@ -53,7 +53,7 @@ def SSA(objective_function, lb, ub, dimension, population_size, iterations, num_
 	food_fitness = sorted_salps_fitness[0]
 	food_labels_pred = sorted_labels_pred[0]
 	
-	convergence_curve[0] = food_fitness
+	convergence[0] = food_fitness
 	print(["At iteration 0 the best fitness is " + str(food_fitness)])
 	
 	iteration = 1
@@ -104,7 +104,7 @@ def SSA(objective_function, lb, ub, dimension, population_size, iterations, num_
 				food_fitness = salp_fitness[k]
 				food_labels_pred = np.copy(salp_labels_pred[k, :])
 
-		convergence_curve[iteration] = food_fitness
+		convergence[iteration] = food_fitness
 		iteration += 1
 		# Display best fitness along the iteration
 		print(["At iteration " + str(iteration - 1) + " the best fitness is " + str(food_fitness)])
@@ -112,7 +112,7 @@ def SSA(objective_function, lb, ub, dimension, population_size, iterations, num_
 	timer_end = time.time()
 	sol.end_time = time.strftime("%Y-%m-%d-%H-%M-%S")
 	sol.runtime = timer_end - timer_start
-	sol.convergence = convergence_curve
+	sol.convergence = convergence
 	sol.optimizer = "SSA"
 	sol.objf_name = objective_function.__name__
 	sol.dataset_name = dataset_name

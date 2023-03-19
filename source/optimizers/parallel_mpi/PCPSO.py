@@ -57,7 +57,7 @@ def PPSO(objective_function, lb, ub, dimension, population_size, iterations, num
 	pos = population[rank * population_size:population_size * (rank + 1)] # np.random.uniform(0, 1, (population_size, dimension)) * (ub - lb) + lb
 	# ------------------------
 	
-	convergence_curve = np.zeros(iterations)
+	convergence = np.zeros(iterations)
 
 	print("PSO_mpi is optimizing \"" + objective_function.__name__ + "\"")
 
@@ -103,7 +103,7 @@ def PPSO(objective_function, lb, ub, dimension, population_size, iterations, num
 
 				pos[i, j] = pos[i, j] + vel[i, j]
 
-		convergence_curve[k] = g_best_score
+		convergence[k] = g_best_score
 		print(["Core: " + str(rank) + " at iteration " + str(k) + " the best fitness is " + str(g_best_score)])
 
 		# ------- Parallel -------
@@ -116,7 +116,7 @@ def PPSO(objective_function, lb, ub, dimension, population_size, iterations, num
 	timer_end = time.time()
 	sol.end_time = time.strftime("%Y-%m-%d-%H-%M-%S")
 	sol.runtime = timer_end - timer_start
-	sol.convergence = convergence_curve
+	sol.convergence = convergence
 	sol.optimizer = "PSO_mpi"
 	sol.objf_name = objective_function.__name__
 	sol.dataset_name = dataset_name

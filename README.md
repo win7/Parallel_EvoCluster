@@ -24,7 +24,7 @@ EvoCluster is an open source and cross-platform framework implemented in Python 
  
 
 ## Installation
-- Python 3.xx is required.
+- Python 3.10 is required.
 
 Run
 

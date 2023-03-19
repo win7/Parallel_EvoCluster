@@ -33,7 +33,7 @@ def PMFO(objective_function, lb, ub, dimension, population_size, iterations, num
 	# moth_fitness=np.fell(float("inf"))
 	# ------------------------
 
-	convergence_curve = np.zeros(iterations)
+	convergence = np.zeros(iterations)
 
 	sorted_population = np.copy(moth_pos)
 	sorted_labels = np.copy(moth_labels)
@@ -152,7 +152,7 @@ def PMFO(objective_function, lb, ub, dimension, population_size, iterations, num
 					# Eq. (3.12)
 					moth_pos[i, j] = distance_to_flame * math.exp(b * t) * math.cos(t * 2 * math.pi) + sorted_population[flame_no, j]
 
-		convergence_curve[iteration - 1] = best_flame_score # Obs: convergence_curve[iteration]
+		convergence[iteration - 1] = best_flame_score # Obs: convergence[iteration]
 		iteration += 1
 		# Display best fitness along the iteration
 		print(["At iteration " + str(iteration - 2) + " the best fitness is " + str(best_flame_score)])
@@ -160,7 +160,7 @@ def PMFO(objective_function, lb, ub, dimension, population_size, iterations, num
 	timer_end = time.time()
 	sol.end_time = time.strftime("%Y-%m-%d-%H-%M-%S")
 	sol.runtime = timer_end - timer_start
-	sol.convergence = convergence_curve
+	sol.convergence = convergence
 	sol.optimizer = "MFO_mp"
 	sol.objf_name = objective_function.__name__
 	sol.dataset_name = dataset_name

@@ -25,7 +25,7 @@ def BAT(objective_function, lb, ub, dimension, population_size, iterations, num_
 	# Initializing arrays
 	Q = np.zeros(population_size)  # Frequency
 	v = np.zeros((population_size, dimension))  # Velocities
-	convergence_curve = []
+	convergence = []
 
 	# Initialize the population/solutions
 	pop = np.copy(population) # np.random.rand(population_size, dimension) * (ub - lb) + lb
@@ -98,13 +98,13 @@ def BAT(objective_function, lb, ub, dimension, population_size, iterations, num_
 				best_labels_pred = labels_pred_new
 
 		# update convergence curve
-		convergence_curve.append(fmin)
+		convergence.append(fmin)
 		print(["At iteration " + str(i) + " the best fitness is " + str(fmin)])
 
 	timer_end = time.time()
 	sol.end_time = time.strftime("%Y-%m-%d-%H-%M-%S")
 	sol.runtime = timer_end - timer_start
-	sol.convergence = convergence_curve
+	sol.convergence = convergence
 	sol.optimizer = "BAT"
 	sol.objf_name = objective_function.__name__
 	sol.dataset_name = dataset_name

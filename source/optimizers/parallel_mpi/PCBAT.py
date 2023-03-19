@@ -36,7 +36,7 @@ def PBAT(objective_function, lb, ub, dimension, population_size, iterations, num
 	# Initializing arrays
 	Q = np.zeros(population_size)  # Frequency
 	v = np.zeros((population_size, dimension))  # Velocities
-	convergence_curve = []
+	convergence = []
 
 	# Initialize the population/solutions
 	# ------- Parallel -------
@@ -111,7 +111,7 @@ def PBAT(objective_function, lb, ub, dimension, population_size, iterations, num
 				best_labels_pred = labels_pred_new
 
 		# update convergence curve
-		convergence_curve.append(fmin)
+		convergence.append(fmin)
 		print(["Core: " + str(rank) + " at iteration " + str(i) + " the best fitness is " + str(fmin)])
 
 		# ------- Parallel -------
@@ -124,7 +124,7 @@ def PBAT(objective_function, lb, ub, dimension, population_size, iterations, num
 	timer_end = time.time()
 	sol.end_time = time.strftime("%Y-%m-%d-%H-%M-%S")
 	sol.runtime = timer_end - timer_start
-	sol.convergence = convergence_curve
+	sol.convergence = convergence
 	sol.optimizer = "BAT_mpi"
 	sol.objf_name = objective_function.__name__
 	sol.dataset_name = dataset_name
@@ -143,7 +143,7 @@ def PBAT(objective_function, lb, ub, dimension, population_size, iterations, num
 		best_sol = sol
 		for k in range(1, size):
 			sol = comm.recv(source=k)
-			if best_fitness < sol.fitness:
+			if sol.fitness < best_fitness:
 				best_fitness = sol.fitness
 				best_sol = sol
 		best_sol.save()

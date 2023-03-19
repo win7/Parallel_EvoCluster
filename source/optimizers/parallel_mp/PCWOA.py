@@ -40,7 +40,7 @@ def PWOA(objective_function, lb, ub, dimension, population_size, iterations, num
 	# ------------------------
 	
 	# Initialize convergence
-	convergence_curve = np.zeros(iterations)
+	convergence = np.zeros(iterations)
 
 	sol = Solution()
 
@@ -115,14 +115,14 @@ def PWOA(objective_function, lb, ub, dimension, population_size, iterations, num
 					# Eq. (2.5)
 					positions[i, j] = distance2_leader * math.exp(b * l) * math.cos(l * 2 * math.pi) + leader_pos[j]
 
-		convergence_curve[iteration] = leader_score[0]
+		convergence[iteration] = leader_score[0]
 		iteration += 1
 		print(["At iteration " + str(iteration - 1) + " the best fitness is " + str(leader_score[0])])
 
 	timer_end = time.time()
 	sol.end_time = time.strftime("%Y-%m-%d-%H-%M-%S")
 	sol.runtime = timer_end - timer_start
-	sol.convergence = convergence_curve
+	sol.convergence = convergence
 	sol.optimizer = "WOA_mp"
 	sol.objf_name = objective_function.__name__
 	sol.dataset_name = dataset_name

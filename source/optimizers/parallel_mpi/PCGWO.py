@@ -50,7 +50,7 @@ def PGWO(objective_function, lb, ub, dimension, population_size, iterations, num
 	# ------------------------
 	labels_pred = np.zeros((population_size, len(points)))
 
-	convergence_curve = np.zeros(iterations)
+	convergence = np.zeros(iterations)
 	sol = Solution()
 
 	# Loop counter
@@ -136,7 +136,7 @@ def PGWO(objective_function, lb, ub, dimension, population_size, iterations, num
 
 				positions[i, j] = (X1 + X2 + X3) / 3 # Equation (3.7)
 
-		convergence_curve[k] = alpha_score
+		convergence[k] = alpha_score
 		print(["Core: " + str(rank) + " at iteration " + str(k) + " the best fitness is " + str(alpha_score)])
 
 		# ------- Parallel -------
@@ -149,7 +149,7 @@ def PGWO(objective_function, lb, ub, dimension, population_size, iterations, num
 	timer_end = time.time()
 	sol.end_time = time.strftime("%Y-%m-%d-%H-%M-%S")
 	sol.runtime = timer_end - timer_start
-	sol.convergence = convergence_curve
+	sol.convergence = convergence
 	sol.optimizer = "GWO_mpi"
 	sol.objf_name = objective_function.__name__
 	sol.dataset_name = dataset_name
