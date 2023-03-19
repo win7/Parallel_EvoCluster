@@ -151,7 +151,7 @@ def PSSA(objective_function, lb, ub, dimension, population_size, iterations, num
 		best_sol = sol
 		for k in range(1, size):
 			sol = comm.recv(source=k)
-			if best_fitness < sol.fitness:
+			if sol.fitness < best_fitness:
 				best_fitness = sol.fitness
 				best_sol = sol
 		best_sol.save()
