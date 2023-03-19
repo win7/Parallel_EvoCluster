@@ -194,7 +194,7 @@ if __name__ == "__main__":
 					}
 					print(policy)
 					# run(optimizer, objective_function, dataset_list, num_runs, params, export_flags, policy)
-					run([item1], objective_function, list(dataset_list[index]), num_runs, params, export_flags, policy, 
+					run([item1], objective_function, list(dataset_list[index]), num_runs, params, export_flags, [policy], 
 						auto_cluster=False, num_clusters=list(clusters[index]), labels_exist=True, metric="euclidean")
 
 # Run:
