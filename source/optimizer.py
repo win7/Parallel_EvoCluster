@@ -261,7 +261,7 @@ def run(optimizer, objective_function, dataset_list, num_runs, params, export_fl
 						params.points = points[h]
 						params.metric = metric
 						params.dataset_name = dataset_list[h]
-						params.policy = list_policy[i]
+						params.policy = list_policy[i] # for get best params use: list_policy[0] else list_policy[i]
 						params.cores = cores
 						params.save()
 
@@ -276,8 +276,8 @@ def run(optimizer, objective_function, dataset_list, num_runs, params, export_fl
 							# result = subprocess.run(["mpirun -np 24", "python", "selector.py"])
 							# prog = subprocess.Popen('mpirun -n 2 python hello_mpi.py', stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 							# prog = subprocess.Popen('mpirun -np 24 --oversubscribe python selector.py', stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-							os.system("mpirun -np 24 --oversubscribe python selector.py")
 							# result = os.system("mpiexec -n 24 python selector.py")
+							os.system("mpirun -np 24 --oversubscribe python selector.py")
 						elif "_mp" == optimizer[i][-3:]:
 							print("Parallel MP version")
 							os.system("python selector.py")
@@ -287,11 +287,12 @@ def run(optimizer, objective_function, dataset_list, num_runs, params, export_fl
 							# os.system("cd source")
 							# os.system("python selector.py")
 							# subprocess.call('cd source', shell=True)
-							result = subprocess.run(["python", "selector.py"])
+							# result = subprocess.run(["python", "selector.py"])
 							# subprocess.run('python source/selector.py', shell=True)
 							# print(output)
 							# subprocess.check_output("python source/selector.py", shell=True)
 							# result = subprocess.run(["python", "sources/selector.py"])
+							os.system("python selector.py")
 					# ---------------------
 					sol = Solution().get("{}_{}_{}".format(optimizer[i], objective_name, dataset_list[h]))
 					
