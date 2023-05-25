@@ -12,7 +12,7 @@ if __name__ == "__main__":
 	optimizer = ["SSA", "PSO", "GA", "BAT", "FFA", "GWO", "WOA", "MVO", "MFO", "CS", 
 				 "SSA_mpi", "PSO_mpi", "GA_mpi", "BAT_mpi", "FFA_mpi", "GWO_mpi", "WOA_mpi", "MVO_mpi", "MFO_mpi", "CS_mpi",
 				 "SSA_mp", "PSO_mp", "GA_mp", "BAT_mp", "FFA_mp", "GWO_mp", "WOA_mp", "MVO_mp", "MFO_mp", "CS_mp"]
-	optimizer = ["BAT", "BAT_mpi", "BAT_mp"]
+	# optimizer = ["BAT", "BAT_mpi", "BAT_mp"]
 
 	# Select objective function
 	# "SSE", "TWCV", "SC", "DB", "DI"
@@ -30,7 +30,7 @@ if __name__ == "__main__":
 	clusters = np.array([7, 3, 2, 3, 2, 3, 2, 2, 2, 5, 2, 6, 2, 3, 3, 2, 2, 2, 2, 3, 3, 3, 4, 2, 3, 3, 2, 3, 2, 3])
 
 	# Select index for dataset and clusters numbers
-	index = [22] # [1, 4, 5, 9, 15, 17, 19, 28]
+	index = [13] # [1, 4, 5, 9, 15, 17, 19, 28]
 
 	# Select number of repetitions for each experiment.
 	# To obtain meaningful statistical results, usually 30 independent runs are executed for each algorithm.

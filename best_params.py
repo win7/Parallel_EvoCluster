@@ -12,7 +12,7 @@ def min_max_scaling(series):
 def z_score_standardization(series):
     return (series - series.mean()) / series.std()
 
-config = "config(1_2)" # "config1", "config2", "config(1_2)"
+config = "config1" # "config1", "config2", "config(1_2)"
 
 # Only for combine files
 # -------
@@ -30,9 +30,9 @@ combined_csv.to_csv("best_params_{}.csv".format(config), index=False, encoding="
 
 # Get best params for config1 and config2
 # -------
-""" datasets = ["balance", "blood", "pathbased", "smiley", "vary-density", "wine"]
+datasets = ["balance", "blood", "pathbased", "smiley", "vary-density", "wine"]
 
-optimizers = ["MPI_SSA", "MPI_PSO", "MPI_GA", "MPI_BAT", "MPI_FFA", "MPI_GWO", "MPI_WOA", "MPI_MVO", "MPI_MFO", "MPI_CS"]
+optimizers = ["SSA_mpi", "PSO_mpi", "GA_mpi", "BAT_mpi", "FFA_mpi", "GWO_mpi", "WOA_mpi", "MVO_mpi", "MFO_mpi", "CS_mpi"]
 topologies = ["RING", "TREE", "NETA", "NETB", "TORUS", "GRAPH", "SAME", "GOODBAD", "RAND"]
 
 df = pd.read_csv("best_params_{}.csv".format(config))
@@ -49,6 +49,7 @@ for optimizer in optimizers:
             aux = group_df.get_group(key)
             for column in aux[["SSE"]]:
                 df_rating[dataset] = list(absolute_maximum_scale(aux[column]))
+        
         df_rating["mean"] = df_rating.mean(axis=1)
         min_index = df_rating["mean"].idxmin()
         min_metric = df_rating["mean"].min()
@@ -60,15 +61,16 @@ for optimizer in optimizers:
         print("Count Min.: {}".format(count_min))
 
         print(df_rating)
-        print() """
+        print()
 
 # Run
+# python best_params.py > z_config1.txt
 # python best_params.py > z_config2.txt
 # -------
 
 # Get best params for config(1_2)
 # -------
-datasets = ["balance", "blood", "pathbased", "smiley", "vary-density", "wine"]
+""" datasets = ["balance", "blood", "pathbased", "smiley", "vary-density", "wine"]
 
 optimizers = ["MPI_SSA", "MPI_PSO", "MPI_GA", "MPI_BAT", "MPI_FFA", "MPI_GWO", "MPI_WOA", "MPI_MVO", "MPI_MFO", "MPI_CS"]
 topologies = ["RING", "TREE", "NETA", "NETB", "TORUS", "GRAPH", "SAME", "GOODBAD", "RAND"]
@@ -90,7 +92,7 @@ for optimizer in optimizers:
         print((optimizer, topology))
         print("Mean Metric: {}".format(mean_metric))
         print("Mean Time: {}".format(mean_execution))
-        print()
+        print() """
 
 # Run
 # python best_params.py > z_config(1_2).txt
@@ -107,5 +109,4 @@ for optimizer in optimizers:
     # print(group)
     print(group["x"])
     print() """
-
 
