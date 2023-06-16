@@ -99,8 +99,11 @@ if __name__ == "__main__":
 	# print(list_policy)
 
 	# run(optimizer, objective_function, dataset_list, num_runs, params, export_flags, policy)
-	run(optimizer, objective_function, list(dataset_list[index]), num_runs, params, export_flags, list_policy,
-		auto_cluster=False, num_clusters=list(clusters[index]), labels_exist=True, metric="euclidean")
+	""" run(optimizer, objective_function, list(dataset_list[index]), num_runs, params, export_flags, list_policy,
+			auto_cluster=False, num_clusters=list(clusters[index]), labels_exist=True, metric="euclidean") """
+	for i in index:
+		run(optimizer, objective_function, list(dataset_list[[i]]), num_runs, params, export_flags, list_policy,
+			auto_cluster=False, num_clusters=list(clusters[[i]]), labels_exist=True, metric="euclidean")
 
 # Run:
 # python example.py
