@@ -12,7 +12,7 @@ def min_max_scaling(series):
 def z_score_standardization(series):
     return (series - series.mean()) / series.std()
 
-config = "config1" # "config1", "config2", "config(1_2)"
+config = "config2" # "config1", "config2", "config(1_2)"
 
 # Only for combine files
 # -------
