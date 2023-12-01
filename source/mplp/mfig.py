@@ -63,12 +63,12 @@ class Mfig(object):
     colors_cyl = Paired_10
 
     def __init__(self,
-                 format=None,
-                 scale=0.9,
-                 formatting='landscape',
-                 column=1,
-                 colors=None,
-                 fontsize=None):
+                format=None,
+                scale=0.9,
+                formatting='landscape',
+                column=1,
+                colors=None,
+                fontsize=None):
         """Constructor
 
         Parameters

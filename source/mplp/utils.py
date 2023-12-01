@@ -35,12 +35,12 @@ def logbins(x):
     Parameters
     ----------
         x: ndarray
-           data to be bined  
+            data to be bined  
     
     Return
     ------
         bins: ndarray 
-              bins with logarithmic size
+            bins with logarithmic size
 
     References:
         [1] Jeff Alstott, Ed Bullmore, Dietmar Plenz. (2014). powerlaw: a Python package for analysis of heavy-tailed distributions. https://github.com/jeffalstott/powerlaw

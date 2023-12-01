@@ -2,8 +2,10 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 
+import os
 import sys
-sys.path.append("..")
+
+sys.path.insert(0, os.getcwd() + "/source")
 import mplp
 # help(mplp)
 
@@ -48,7 +50,7 @@ def run(results_directory, optimizer, objective_function, dataset_list, iteratio
 			ax.set_ylabel("Algorithms")
 			# ax.legend(loc="upper right")
 			# plt.grid()
-			plt.savefig(fig_name + ".png", bbox_inches="tight")
+			# plt.savefig(fig_name + ".png", bbox_inches="tight")
 			if show:
 				plt.show()
 			# plt.clf()
@@ -57,8 +59,8 @@ def run(results_directory, optimizer, objective_function, dataset_list, iteratio
 if __name__ == "__main__":
 	results_directory =  "results_v1_update/2022-10-30_09_51_52"
 	optimizer = ["SSA", "PSO", "GA", "BAT", "FFA", "GWO", "WOA", "MVO", "MFO", "CS", 
-				 "SSA_mpi", "PSO_mpi", "GA_mpi", "BAT_mpi", "FFA_mpi", "GWO_mpi", "WOA_mpi", "MVO_mpi", "MFO_mpi", "CS_mpi",
-				 "SSA_mp", "PSO_mp", "GA_mp", "BAT_mp", "FFA_mp", "GWO_mp", "WOA_mp", "MVO_mp", "MFO_mp", "CS_mp"]
+					"SSA_mpi", "PSO_mpi", "GA_mpi", "BAT_mpi", "FFA_mpi", "GWO_mpi", "WOA_mpi", "MVO_mpi", "MFO_mpi", "CS_mpi",
+					"SSA_mp", "PSO_mp", "GA_mp", "BAT_mp", "FFA_mp", "GWO_mp", "WOA_mp", "MVO_mp", "MFO_mp", "CS_mp"]
 
 	objective_function = ["SSE"]
 	dataset_list = ["ecoli"]

@@ -10,14 +10,15 @@ if __name__ == "__main__":
 	# "SSA_mpi", "PSO_mpi", "GA_mpi", "BAT_mpi", "FFA_mpi", "GWO_mpi", "WOA_mpi", "MVO_pmi", "MFO_mpi", "CS_mpi",
 	# "SSA_mp", "PSO_mp", "GA_mp", "BAT_mp", "FFA_mp", "GWO_mp", "WOA_mp", "MVO_mp", "MFO_mp", "CS_mp"
 	optimizer = ["SSA", "PSO", "GA", "BAT", "FFA", "GWO", "WOA", "MVO", "MFO", "CS", 
-				 "SSA_mpi", "PSO_mpi", "GA_mpi", "BAT_mpi", "FFA_mpi", "GWO_mpi", "WOA_mpi", "MVO_mpi", "MFO_mpi", "CS_mpi",
-				 "SSA_mp", "PSO_mp", "GA_mp", "BAT_mp", "FFA_mp", "GWO_mp", "WOA_mp", "MVO_mp", "MFO_mp", "CS_mp"]
-	optimizer = ["SSA_mpi", "PSO_mpi", "GA_mpi", "BAT_mpi", "FFA_mpi", "GWO_mpi", "WOA_mpi", "MVO_mpi", "MFO_mpi", "CS_mpi"]
+				"SSA_mpi", "PSO_mpi", "GA_mpi", "BAT_mpi", "FFA_mpi", "GWO_mpi", "WOA_mpi", "MVO_mpi", "MFO_mpi", "CS_mpi",
+				"SSA_mp", "PSO_mp", "GA_mp", "BAT_mp", "FFA_mp", "GWO_mp", "WOA_mp", "MVO_mp", "MFO_mp", "CS_mp"]
+	optimizer = ["SSA_mp", "PSO_mp", "GA_mp", "BAT_mp", "FFA_mp", "GWO_mp", "WOA_mp", "MVO_mp", "MFO_mp", "CS_mp"]
+	optimizer = ["SSA", "PSO"]
 
 	# Select objective function
-	# "SSE", "TWCV", "SC", "DB", "DI"
-	objective_function = ["SSE", "TWCV", "SC", "DB", "DI"]
-	objective_function=["SSE"] 
+	# "SSE", "TWCV", "SC", "DB", "DI", STDev (no working)
+	objective_function = ["SSE", "TWCV", "SC", "DB", "DI"] 
+	objective_function = ["SSE"] 
 
 	# Select data sets
 	# "aggregation", "aniso", "appendicitis", "balance", "banknote", "blobs", "blood", "circles", "diagnosis_II", "ecoli", "flame","glass", "heart", "ionosphere", "iris", 
@@ -30,21 +31,21 @@ if __name__ == "__main__":
 	clusters = np.array([7, 3, 2, 3, 2, 3, 2, 2, 2, 5, 2, 6, 2, 3, 3, 2, 2, 2, 2, 3, 3, 3, 4, 2, 3, 3, 2, 3, 2, 3])
 
 	# Select index for dataset and clusters numbers
-	index = [1, 4, 5, 9] # [1, 4, 5, 9, 15, 17, 19, 28]
+	index = [13] # [1, 4, 5, 9] # [1, 4, 5, 9, 15, 17, 19, 28]
 
 	# Select number of repetitions for each experiment.
 	# To obtain meaningful statistical results, usually 30 independent runs are executed for each algorithm.
-	num_runs = 10 # 5, 10
+	num_runs = 2 # 5, 10
 
 	# Select general parameters for all optimizers (population size, number of iterations, number of cores for MP)
-	params = {"population_size": cores * 30, "iterations": 100, "cores": cores}
+	params = {"population_size": cores * 30, "iterations": 50, "cores": cores}
 
 	# Choose whether to Export the results in different formats
 	export_flags = {
 		"export_avg": True,
 		"export_details": True,
 		"export_details_labels": True,
-		"export_best_params": False,
+		"export_best_params": False, # True only for parallel MPI
 		"export_convergence": True,
 		"export_boxplot": False,
 		"export_runtime": True

@@ -71,34 +71,34 @@ def selector(algorithm, objective_name, num_clusters, num_features, population_s
 
 	if (algorithm == "SSA"):
 		sol = cssa.SSA(getattr(objectives, objective_name), lb, ub, dimension, population_size,
-					   iterations, num_clusters, points, metric, dataset_name, population)
+					iterations, num_clusters, points, metric, dataset_name, population)
 	elif (algorithm == "PSO"):
 		sol = cpso.PSO(getattr(objectives, objective_name), lb, ub, dimension, population_size,
-					   iterations, num_clusters, points, metric, dataset_name, population)
+					iterations, num_clusters, points, metric, dataset_name, population)
 	elif (algorithm == "GA"):
 		sol = cga.GA(getattr(objectives, objective_name), lb, ub, dimension, population_size,
-					 iterations, num_clusters, points, metric, dataset_name, population)
+					iterations, num_clusters, points, metric, dataset_name, population)
 	elif (algorithm == "BAT"):
 		sol = cbat.BAT(getattr(objectives, objective_name), lb, ub, dimension, population_size,
-					   iterations, num_clusters, points, metric, dataset_name, population)
+					iterations, num_clusters, points, metric, dataset_name, population)
 	elif (algorithm == "FFA"):
 		sol = cffa.FFA(getattr(objectives, objective_name), lb, ub, dimension, population_size,
-					   iterations, num_clusters, points, metric, dataset_name, population)
+					iterations, num_clusters, points, metric, dataset_name, population)
 	elif (algorithm == "GWO"):
 		sol = cgwo.GWO(getattr(objectives, objective_name), lb, ub, dimension, population_size,
-					   iterations, num_clusters, points, metric, dataset_name, population)
+					iterations, num_clusters, points, metric, dataset_name, population)
 	elif (algorithm == "WOA"):
 		sol = cwoa.WOA(getattr(objectives, objective_name), lb, ub, dimension, population_size,
-					   iterations, num_clusters, points, metric, dataset_name, population)
+					iterations, num_clusters, points, metric, dataset_name, population)
 	elif (algorithm == "MVO"):
 		sol = cmvo.MVO(getattr(objectives, objective_name), lb, ub, dimension, population_size,
-					   iterations, num_clusters, points, metric, dataset_name, population)
+					iterations, num_clusters, points, metric, dataset_name, population)
 	elif (algorithm == "MFO"):
 		sol = cmfo.MFO(getattr(objectives, objective_name), lb, ub, dimension, population_size,
-					   iterations, num_clusters, points, metric, dataset_name, population)
+					iterations, num_clusters, points, metric, dataset_name, population)
 	elif (algorithm == "CS"):
 		sol = ccs.CS(getattr(objectives, objective_name), lb, ub, dimension, population_size,
-					 iterations, num_clusters, points, metric, dataset_name, population)
+					iterations, num_clusters, points, metric, dataset_name, population)
 	# elif (algorithm == "SSO"):
 	# 	sol = csso.CSSO(getattr(objectives, objective_name), lb, ub, dimension, population_size, iterations, num_clusters, points, metric, dataset_name, population) """
 
@@ -136,31 +136,31 @@ def selector(algorithm, objective_name, num_clusters, num_features, population_s
 	# 	sol = csso_mp.PCSSO(getattr(objectives, objective_name), lb, ub, dimension, population_size, iterations, num_clusters, points, metric, dataset_name, population)
 	elif (algorithm == "SSA_mpi"):
 		sol = cssa_mpi.PSSA(getattr(objectives, objective_name), lb, ub, dimension, population_size,
-							  iterations, num_clusters, points, metric, dataset_name, policy, population)
+							iterations, num_clusters, points, metric, dataset_name, policy, population)
 	elif (algorithm == "PSO_mpi"):
 		sol = cpso_mpi.PPSO(getattr(objectives, objective_name), lb, ub, dimension, population_size,
-							  iterations, num_clusters, points, metric, dataset_name, policy, population)
+							iterations, num_clusters, points, metric, dataset_name, policy, population)
 	elif (algorithm == "GA_mpi"):
 		sol = cga_mpi.PGA(getattr(objectives, objective_name), lb, ub, dimension, population_size,
 							iterations, num_clusters, points, metric, dataset_name, policy, population)
 	elif (algorithm == "BAT_mpi"):
 		sol = cbat_mpi.PBAT(getattr(objectives, objective_name), lb, ub, dimension, population_size,
-							  iterations, num_clusters, points, metric, dataset_name, policy, population)
+							iterations, num_clusters, points, metric, dataset_name, policy, population)
 	elif (algorithm == "FFA_mpi"):
 		sol = cffa_mpi.PFFA(getattr(objectives, objective_name), lb, ub, dimension, population_size,
-							  iterations, num_clusters, points, metric, dataset_name, policy, population)
+							iterations, num_clusters, points, metric, dataset_name, policy, population)
 	elif (algorithm == "GWO_mpi"):
 		sol = cgwo_mpi.PGWO(getattr(objectives, objective_name), lb, ub, dimension, population_size,
-							  iterations, num_clusters, points, metric, dataset_name, policy, population)
+							iterations, num_clusters, points, metric, dataset_name, policy, population)
 	elif (algorithm == "WOA_mpi"):
 		sol = cwoa_mpi.PWOA(getattr(objectives, objective_name), lb, ub, dimension, population_size,
-							  iterations, num_clusters, points, metric, dataset_name, policy, population)
+							iterations, num_clusters, points, metric, dataset_name, policy, population)
 	elif (algorithm == "MVO_mpi"):
 		sol = cmvo_mpi.PMVO(getattr(objectives, objective_name), lb, ub, dimension, population_size,
-							  iterations, num_clusters, points, metric, dataset_name, policy, population)
+							iterations, num_clusters, points, metric, dataset_name, policy, population)
 	elif (algorithm == "MFO_mpi"):
 		sol = cmfo_mpi.PMFO(getattr(objectives, objective_name), lb, ub, dimension, population_size,
-							  iterations, num_clusters, points, metric, dataset_name, policy, population)
+							iterations, num_clusters, points, metric, dataset_name, policy, population)
 	elif (algorithm == "CS_mpi"):
 		sol = ccs_mpi.PCS(getattr(objectives, objective_name), lb, ub, dimension, population_size,
 							iterations, num_clusters, points, metric, dataset_name, policy, population)

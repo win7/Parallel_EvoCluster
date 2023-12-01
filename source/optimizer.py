@@ -83,7 +83,7 @@ def run(optimizer, objective_function, dataset_list, num_runs, params, export_fl
 		if the value is False, the following hold:
 		- supervised value for num_clusters is not allowed
 		- experiments, and experiments_details files contain only the evaluation measures for 
-		  "SSE","TWCV","SC","DB","DI","STDev"
+			"SSE","TWCV","SC","DB","DI","STDev"
 		- export_boxplot is set for "SSE","TWCV","SC","DB","DI","STDev"   
 	metric: string, default = "euclidean"
 		The metric to use when calculating the distance between points if applicable for the objective function selected. 
@@ -350,7 +350,7 @@ def run(optimizer, objective_function, dataset_list, num_runs, params, export_fl
 						if (flag_avg == False):  # just one time to write the header of the CSV file
 							if labels_exist:
 								header = np.concatenate([["Dataset", "Optimizer", "Topology", "ObjfName", "k", "ExecutionTime", "SSE", "Purity", "Entropy",
-															 "HS", "CS", "VM", "AMI", "ARI", "Fmeasure", "TWCV", "SC", "Accuracy", "DI", "DB", "STDev"], CnvgHeader])
+															"HS", "CS", "VM", "AMI", "ARI", "Fmeasure", "TWCV", "SC", "Accuracy", "DI", "DB", "STDev"], CnvgHeader])
 							else:
 								header = np.concatenate(
 									[["Dataset", "Optimizer", "Topology", "ObjfName", "k", "ExecutionTime", "SSE", "TWCV", "SC", "DI", "DB", "STDev"], CnvgHeader])
@@ -393,7 +393,7 @@ def run(optimizer, objective_function, dataset_list, num_runs, params, export_fl
 						if (flag_best_params == False):  # just one time to write the header of the CSV file
 							header = np.concatenate(
 									[["Dataset", "Optimizer", "Topology", "Emigration", "ChoiceEmi", "ChoiceImm", "NumberEmiImm", "IntervalEmiImm",
-									 "ObjfName", "k", "ExecutionTime", "SSE"]])
+										"ObjfName", "k", "ExecutionTime", "SSE"]])
 							writer.writerow(header)
 							flag_best_params = True  # at least one experiment
 
@@ -412,7 +412,7 @@ def run(optimizer, objective_function, dataset_list, num_runs, params, export_fl
 	if export_boxplot:
 		if labels_exist:
 			ev_measures = ["SSE", "Purity", "Entropy", "HS", "CS", "VM", "AMI",
-						   "ARI", "Fmeasure", "TWCV", "SC", "Accuracy", "DI", "DB", "STDev"]
+							"ARI", "Fmeasure", "TWCV", "SC", "Accuracy", "DI", "DB", "STDev"]
 		else:
 			ev_measures = ["SSE", "TWCV", "SC", "DI", "DB", "STDev"]
 		box_plot.run(results_directory, optimizer, objective_function, dataset_list, ev_measures, iterations)
