@@ -268,8 +268,8 @@ def run(optimizer, objective_function, dataset_list, num_runs, params, export_fl
 						# print(optimizer[i])
 						if "_mpi" == optimizer[i][-4:]:
 							print("Parallel MPI version")
-							# os.system("mpirun -np 24 --oversubscribe python3 selector.py")
-							os.system("mpiexec -n 24 python3 selector.py")
+							os.system("mpirun -np 24 --oversubscribe python3 selector.py")
+							# os.system("mpiexec -n 24 python3 selector.py")
 						elif "_mp" == optimizer[i][-3:]:
 							print("Parallel MP version")
 							os.system("python3 selector.py")
