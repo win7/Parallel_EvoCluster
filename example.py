@@ -13,7 +13,7 @@ if __name__ == "__main__":
 				"SSA_mpi", "PSO_mpi", "GA_mpi", "BAT_mpi", "FFA_mpi", "GWO_mpi", "WOA_mpi", "MVO_mpi", "MFO_mpi", "CS_mpi",
 				"SSA_mp", "PSO_mp", "GA_mp", "BAT_mp", "FFA_mp", "GWO_mp", "WOA_mp", "MVO_mp", "MFO_mp", "CS_mp"]
 	optimizer = ["SSA_mp", "PSO_mp", "GA_mp", "BAT_mp", "FFA_mp", "GWO_mp", "WOA_mp", "MVO_mp", "MFO_mp", "CS_mp"]
-	optimizer = ["SSA", "PSO"]
+	optimizer = ["SSA", "SSA_mp", "SSA_mpi"]
 
 	# Select objective function
 	# "SSE", "TWCV", "SC", "DB", "DI", STDev (no working)
