@@ -50,7 +50,7 @@ def run(results_directory, optimizer, objective_function, dataset_list, iteratio
 			ax.set_ylabel("Algorithms")
 			# ax.legend(loc="upper right")
 			# plt.grid()
-			# plt.savefig(fig_name + ".png", bbox_inches="tight")
+			plt.savefig(fig_name + ".png", bbox_inches="tight")
 			if show:
 				plt.show()
 			# plt.clf()

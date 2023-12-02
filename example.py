@@ -12,8 +12,8 @@ if __name__ == "__main__":
 	optimizer = ["SSA", "PSO", "GA", "BAT", "FFA", "GWO", "WOA", "MVO", "MFO", "CS", 
 				"SSA_mpi", "PSO_mpi", "GA_mpi", "BAT_mpi", "FFA_mpi", "GWO_mpi", "WOA_mpi", "MVO_mpi", "MFO_mpi", "CS_mpi",
 				"SSA_mp", "PSO_mp", "GA_mp", "BAT_mp", "FFA_mp", "GWO_mp", "WOA_mp", "MVO_mp", "MFO_mp", "CS_mp"]
-	optimizer = ["SSA_mp", "PSO_mp", "GA_mp", "BAT_mp", "FFA_mp", "GWO_mp", "WOA_mp", "MVO_mp", "MFO_mp", "CS_mp"]
-	optimizer = ["SSA", "SSA_mp", "SSA_mpi"]
+	# optimizer = ["SSA_mp", "PSO_mp", "GA_mp", "BAT_mp", "FFA_mp", "GWO_mp", "WOA_mp", "MVO_mp", "MFO_mp", "CS_mp"]
+	# optimizer = ["SSA", "PSO", "SSA_mp", "PSO_mp", "SSA_mpi", "PSO_mpi"]
 
 	# Select objective function
 	# "SSE", "TWCV", "SC", "DB", "DI", STDev (no working)
@@ -35,10 +35,10 @@ if __name__ == "__main__":
 
 	# Select number of repetitions for each experiment.
 	# To obtain meaningful statistical results, usually 30 independent runs are executed for each algorithm.
-	num_runs = 2 # 5, 10
+	num_runs = 1 # 5, 10
 
 	# Select general parameters for all optimizers (population size, number of iterations, number of cores for MP)
-	params = {"population_size": cores * 30, "iterations": 50, "cores": cores}
+	params = {"population_size": cores * 30, "iterations": 30, "cores": cores}
 
 	# Choose whether to Export the results in different formats
 	export_flags = {

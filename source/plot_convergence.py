@@ -13,6 +13,7 @@ def run(results_directory, optimizer, objective_function, dataset_list, iteratio
 	mfig = mplp.Mfig(format="double", formatting="landscape")
 	fig, ax = mfig.subplots(figsize=(8, 5))
 	colors = mfig.get_color_cycle()
+	print(colors)
 	# plt.ioff()
 
 	file_results_data = pd.read_csv(results_directory + "/experiment_avg.csv")
@@ -37,7 +38,7 @@ def run(results_directory, optimizer, objective_function, dataset_list, iteratio
 			all_generations = [x + 1 for x in range(start_iteration, iterations)]
 			for k in range(len(optimizer)):
 				optimizer_name = optimizer[k]
-
+				# print(optimizer_name)
 				if "_mpi" == optimizer[k][-4:]:
 					line_style = "dashed"
 				elif "_mp" == optimizer[k][-3:]:
@@ -66,21 +67,22 @@ def run(results_directory, optimizer, objective_function, dataset_list, iteratio
 			# plt.legend(loc="upper right", bbox_to_anchor=(1.2, 1.02))
 			ax.legend(loc="upper right", ncol=int(np.ceil(len(optimizer) / 10)), borderaxespad=0.2, prop={"size":9})
 			# plt.grid()
-			# plt.savefig(fig_name, bbox_inches="tight")
+			plt.savefig(fig_name, bbox_inches="tight")
 			if show:
 				ax.show()
 				# plt.clf()
 			mfig.savefig(fig_name)
 
 if __name__ == "__main__":
-	results_directory =  "results_v1_update/2022-10-30_09_51_52" # "results/2022-10-30_09:51:52"
+	results_directory =  "results/2023-12-01_23:35:45" # "results/2022-10-30_09:51:52"
 	optimizer = ["SSA", "PSO", "GA", "BAT", "FFA", "GWO", "WOA", "MVO", "MFO", "CS", 
 				"SSA_mpi", "PSO_mpi", "GA_mpi", "BAT_mpi", "FFA_mpi", "GWO_mpi", "WOA_mpi", "MVO_mpi", "MFO_mpi", "CS_mpi",
 				"SSA_mp", "PSO_mp", "GA_mp", "BAT_mp", "FFA_mp", "GWO_mp", "WOA_mp", "MVO_mp", "MFO_mp", "CS_mp"]
+	optimizer = ["SSA", "PSO", "SSA_mp", "PSO_mp", "SSA_mpi", "PSO_mpi"]
 
 	objective_function = ["SSE"]
-	dataset_list = ["ecoli"]
-	iterations = 100
+	dataset_list = ["iris"]
+	iterations = 30
 	
 	run(results_directory, optimizer, objective_function, dataset_list, iterations, show=False)
 
