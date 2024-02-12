@@ -162,3 +162,4 @@ Machine Learning Techniques, pages 131–173. Springer, 2020
 - Ibrahim Aljarah, Majdi Mafarja, Ali Asghar Heidari, Hossam Faris, and Seyedali Mirjalili. Multiverse optimizer: Theory, literature review, and application in a data clustering. In Nature-Inspired Optimizers: Theories, Literature Reviews and Applications, pages 123–141. Springer International Publishing, Cham, 2020
 
 
+### install latex on your S.O.
